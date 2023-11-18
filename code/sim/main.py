@@ -5,6 +5,7 @@ from Box2D.b2 import vec2
 import math
 from graphics import Graphics
 from plank import Plank
+from car import create_car
 
 class MyDict(dict):
     def __init__(self, d = {}):
@@ -55,26 +56,10 @@ fixture = b2.fixtureDef(shape=b2.polygonShape(box=size/2),
                         density=1,
                         friction=0.6)
 
-box1 = world.CreateDynamicBody(position=(20, 20),
-                               fixtures=fixture,
-                               fixedRotation=False)
+#box1 = world.CreateDynamicBody(position=(20, 20),
+#                               fixtures=fixture,
+#                               fixedRotation=False)
 
-
-
-
-# Create two dynamic bodies
-box2 = world.CreateDynamicBody(position=(17,17),
-                               fixtures=fixture,
-                               fixedRotation=False)
-
-
-# Create a revolute joint between the two bodies
-joint = world.CreateRevoluteJoint(
-    bodyA=box1,
-    bodyB=box2,
-    anchor=box1.position-size/2,
-    collideConnected=False,
-)
 
 # Set up Pygame clock
 clock = pygame.time.Clock()
@@ -90,8 +75,9 @@ planks = []
 mouse_pressed = False
 plank_start, plank_end = None, None
 
+car, wheels = create_car(world, (3,12))
+
 running = True
-fav = None
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -116,9 +102,6 @@ while running:
     else:
         mouse_pressed = False
 
-    if fav:
-        print(fav.GetReactionForce(60).length)
-        print(fav.GetReactionTorque(60))
 
     if plank_start and plank_end:
         plank = Plank(world, joint_dict, plank_start, plank_end)  
@@ -126,12 +109,16 @@ while running:
         plank_start, plank_end = None, None
 
     keys = pygame.key.get_pressed()
+
     if keys[pygame.K_s]:
         world.Step(1.0/60, 6, 2)
 
 
+    f = [j.GetReactionForce(60).length for j in world.joints]
+    #print(f)
+    print(wheels[0].angle)
     for j in world.joints:
-        f = j.GetReactionForce(60)
+        f = j.GetReactionForce(60).length
         for p in planks:
             if p.body == j.bodyA or p.body == j.bodyB:
                 p.forces += f
@@ -142,8 +129,13 @@ while running:
     graphics.draw_edgeshape(ground1)
     graphics.draw_edgeshape(ground2)
 
-    graphics.draw_polygon(box1)
-    graphics.draw_polygon(box2)
+    #graphics.draw_polygon(box1)
+
+    graphics.draw_polygon(car)
+    for w in wheels:
+        graphics.draw_circle(w.position, color=(128, 128, 128), r=8)
+        w.angularVelocity = -10
+    
 
     for p in planks:
         p.update()

@@ -11,7 +11,7 @@ class Plank:
             angle = angle,
             fixtures = b2.fixtureDef(shape = b2.polygonShape(box=((start-end).length/2, 0.25)),
                                     density = 1,
-                                    friction = 0.6
+                                    friction = 1
             )
         ) 
         
@@ -33,13 +33,13 @@ class Plank:
         joint_dict[end].append(self.body)
 
         self.stress_color = (0, 255, 0)
-        self.forces = b2.vec2(0,0)
+        self.forces = 0# b2.vec2(0,0)
 
     def update(self):
         f_max = 3000
-        c = min(self.forces.length, f_max)/f_max
+        c = min(self.forces, f_max)/f_max
 
         self.stress_color = (255*c, 255*(1-c), 0)
-        self.forces = b2.vec2(0,0)
+        self.forces = 0 #b2.vec2(0,0)
 
 
