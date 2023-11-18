@@ -1,11 +1,22 @@
-import pygame
 from Box2D.b2 import vec2
+import pygame        
 
 class Graphics:
-    def __init__(self, screen, PPM, size):
-        self.screen = screen
-        self.PPM = PPM
+    def __init__(self, PPM=20, size=vec2(800,600), fps=60):
+
+        pygame.init()
+        self.clock = pygame.time.Clock()
         self.screen_size = size
+        self.screen = pygame.display.set_mode(self.screen_size)
+        pygame.display.set_caption("Poly Bridge in Box2D Example")
+        self.fps = fps
+
+    def clear(self, background=(0,0,0)):
+        self.screen.fill(background)
+
+    def draw(self):
+        pygame.display.flip()
+        self.clock(self.fps)
 
     def draw_circle(self, pos, r=5, color=(255,0,0)):
         pos = pos*self.PPM
