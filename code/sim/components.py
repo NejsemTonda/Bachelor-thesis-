@@ -4,7 +4,7 @@ from buildable import Buildable
 from entity import IEntity 
 
 class Plank(Buildable):
-    def __init__(self, world, start, end, brake_limit=float("inf")):
+    def __init__(self, world, start, end, break_limit=float("inf")):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
         # TODO set flag for collision filtering
@@ -14,7 +14,7 @@ class Plank(Buildable):
 
 
 class Road(Buildable):
-    def __init__(self, world, start, end, brake_limit=float("inf")):
+    def __init__(self, world, start, end, break_limit=float("inf")):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
         # TODO set flag for collision filtering
@@ -82,3 +82,30 @@ class Car(IEntity):
         graphics.draw_polygon(self.body)
         graphics.circle(wheel1.position, self.wheel_size)
         graphics.circle(wheel2.position, self.wheel_size)
+
+
+
+class Ground(IEntity):
+    def __init__(self, world, shape):
+        self.body = world.CreateBody()
+        self.body.CreateEdgeChain(shape)
+
+    def update(self, world):
+        pass
+
+    def draw(self, graphics):
+        graphics.draw_edgeshape(self.body) 
+
+
+class Anchor(IEntity):
+    def __init__(self, pos):
+        self.pos = pos
+        self.entities = []
+
+    def update(self):
+        #TODO do I even need to update this?
+        pass
+
+    def draw(self, graphics):
+        graphics.draw_circle(self.pos, color=(230, 242, 64))
+    

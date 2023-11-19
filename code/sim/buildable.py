@@ -1,5 +1,6 @@
 from entity import IEntity
 from Box2D import b2
+import math
 
 
 class Buildable(IEntity):
@@ -16,22 +17,7 @@ class Buildable(IEntity):
                                     friction = 1
             )
         ) 
-        self.start_joint = None
-        self.end_joint = None
-        for body in joint_dict[start]:
-            self.start_joint = world.CreateRevoluteJoint(
-                bodyA = body,
-                bodyB = self.body,
-                anchor = start
-            )
-
-        for body in joint_dict[end]:
-            self.end_joint = world.CreateRevoluteJoint(
-                bodyA = body,
-                bodyB = self.body,
-                anchor = end
-            )
-
+        self.stress_color = (0, 255, 0)
 
     def update(self, env):
         forces = 0 #TODO update force according to env

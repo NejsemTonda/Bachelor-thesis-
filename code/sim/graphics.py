@@ -10,13 +10,14 @@ class Graphics:
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption("Poly Bridge in Box2D Example")
         self.fps = fps
+        self.PPM = PPM
 
     def clear(self, background=(0,0,0)):
         self.screen.fill(background)
 
     def draw(self):
         pygame.display.flip()
-        self.clock(self.fps)
+        self.clock.tick(self.fps)
 
     def draw_circle(self, pos, r=5, color=(255,0,0)):
         pos = pos*self.PPM

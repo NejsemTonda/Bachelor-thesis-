@@ -1,14 +1,21 @@
-
+from Box2D.b2 import vec2
 class VecDict(dict):
-    def __init__(self, d = {}):
-        self.dict = d
-
     def __getitem__(self, key):
         h = hash((key.x, key.y))
-        if h not in self.dict:
-            self.dict[h] = []
-        return self.dict[h]
+        return super().__getitem__(h) 
 
     def __setitem__(self, key, value):
         h = hash((key.x, key.y))
-        self.dict[h] = value
+        super().__setitem__(h, value)
+
+    def __contains__(self, key):
+        h = hash((key.x, key.y))
+        return super().__contains__(h)
+
+
+
+if __name__ == "__main__":
+    d = VecDict()
+    d[vec2(1,1)] = 1
+    print(d[vec2(1,1)])
+    print(vec2(1,1) in d)
