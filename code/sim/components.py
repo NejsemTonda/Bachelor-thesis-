@@ -5,20 +5,20 @@ from entity import IEntity
 
 
 class Plank(Buildable):
-    def __init__(self, world, start, end, break_limit=float("inf")):
+    def __init__(self, world, start, end, break_limit=300):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
         col_filter = b2.filter(categoryBits=0x0002, maskBits=0xFFF8)
-        print(self.body.fixtures[0].filterData)
         self.body.fixtures[0].filterData = col_filter
         
-            
     def draw(self, graphics):
-        graphics.draw_polygon(self.body, color = self.stress_color)
+        rel_stress = min(1, self.forces/self.break_limit)
+        stress_color = (255*rel_stress, 255*(1-rel_stress), 0)
+        graphics.draw_polygon(self.body, color = stress_color)
 
 
 class Road(Buildable):
-    def __init__(self, world, start, end, break_limit=float("inf")):
+    def __init__(self, world, start, end, break_limit=500):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
         col_filter = b2.filter(categoryBits=0x0001, maskBits=0xFFFF)
@@ -26,7 +26,9 @@ class Road(Buildable):
             
     def draw(self, graphics):
         # TODO diferent drawing than plank
-        graphics.draw_polygon(self.body, color = self.stress_color)
+        rel_stress = min(1, self.forces/self.break_limit)
+        stress_color = (255*rel_stress, 0, 255*(1-rel_stress))
+        graphics.draw_polygon(self.body, color = stress_color)
 
 
 class Car(IEntity):
@@ -99,9 +101,10 @@ class Ground(IEntity):
     def __init__(self, world, shape):
         self.body = world.CreateBody()
         self.body.CreateEdgeChain(shape)
+        self.forces = 0
 
     def update(self, world):
-        pass
+        sefl.forces = 0
 
     def draw(self, graphics):
         graphics.draw_edgeshape(self.body) 
@@ -113,7 +116,6 @@ class Anchor(IEntity):
         self.entities = []
 
     def update(self):
-        #TODO do I even need to update this?
         pass
 
     def draw(self, graphics):

@@ -17,13 +17,10 @@ class Buildable(IEntity):
                                     friction = 1
             )
         ) 
-        self.stress_color = (0, 255, 0)
+        self.forces = 0
 
     def update(self, env):
-        forces = 0 #TODO update force according to env
-        c = min(self.forces, self.break_limit)/self.break_limit
-        self.stress_color = (255*c, 255*(1-c), 0)
-
-        if forces > self.break_limit:
+        if self.forces > self.break_limit:
             #TODO remove buildable
             pass 
+

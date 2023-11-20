@@ -5,12 +5,14 @@ from components import Plank, Road, Car, Ground, Anchor
 
 
 class Environment:
-    def __init__(self):
+    def __init__(self, steps=60):
         self.graphics = None
+        self.steps = steps
         self.grounds = []
         self.planks = []
         self.roads = []
         self.car = None
+
         self.anchor_dic = VecDict()
         self.joint_tuple = []
         
@@ -21,23 +23,21 @@ class Environment:
         plank = Plank(self.world, start, end)
         self.planks.append(plank)
 
-        self.record_buildable(plank, start, end)
+        self.create_joints(plank, start, end)
 
 
     def add_road(self, start, end):
-        # TODO implement adding road
         road = Road(self.world, start, end)
         self.roads.append(road)
 
-        self.record_buildable(road, start, end)
+        self.create_joints(road, start, end)
         return road
 
-    def record_buildable(self, buildable, start, end):
+    def create_joints(self, buildable, start, end):
         for pos in [start,end]:
             if not pos in self.anchor_dic:
-                self.anchor_dic[pos] = self.add_anchor(pos)
+                self.anchor_dic[pos] = self.add_anchor(pos)   
             anchor = self.anchor_dic[pos]
-
 
             for other in anchor.entities:
                 j = self.world.CreateRevoluteJoint(
@@ -52,7 +52,6 @@ class Environment:
 
 
     def add_ground(self, shape, anchors=[]):
-        # TODO 
         g = Ground(self.world, shape)
         self.grounds.append(g)
         for pos in anchors:
@@ -72,9 +71,20 @@ class Environment:
     def add_car(self, pos):
         self.car = Car(self.world, pos) 
 
-
     def step(self):
-        self.world.Step(1.0/60, 6, 2)
+        for e in self.roads+self.planks:
+            e.forces = 0
+        for joint, e1, e2 in self.joint_tuple:
+            force = joint.GetReactionForce(self.steps).length
+            e1.forces += force
+            e2.forces += force
+
+        for e in self.planks+self.roads:
+            e.update(self)
+
+        self.car.update(self)
+
+        self.world.Step(1.0/self.steps, 6, 2)
 
     def draw(self):
         if self.graphics == None:
@@ -82,15 +92,10 @@ class Environment:
             self.graphics = Graphics()
 
         self.graphics.clear()
-        #print(self.grounds)
-        #print(self.planks)
-        #print(self.roads)
-        #print(list(self.anchor_dic.values()))
         for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
             e.draw(self.graphics)
 
         self.car.draw(self.graphics)
-        self.car.update(self)
 
 
         self.graphics.draw()
