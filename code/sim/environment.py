@@ -86,10 +86,13 @@ class Environment:
 
         self.world.Step(1.0/self.steps, 6, 2)
 
+    def init_graphics(self):
+        from graphics import Graphics
+        self.graphics = Graphics()
+
     def draw(self):
         if self.graphics == None:
-            from graphics import Graphics
-            self.graphics = Graphics()
+            self.init_graphics()
 
         self.graphics.clear()
         for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
