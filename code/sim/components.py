@@ -25,14 +25,14 @@ class Road(Buildable):
 
 
 class Car(IEntity):
-    def __init__(self, world, speed=10, density=1, wheel_size=0.4):
+    def __init__(self, world, pos, speed=10, density=1, wheel_size=0.4):
         # Create the car body
         self.wheel_size = wheel_size
         self.speed = speed
         self.chasssis = world.CreateDynamicBody(
             position=pos,
-            fixtures = Box2D.b2.fixtureDef(
-                shape=polygonShape(vertices=[
+            fixtures = b2.fixtureDef(
+                shape=b2.polygonShape(vertices=[
                     (-1.5, -0.5),
                     (1.5, -0.5),
                     (1.5, 0.0),
@@ -45,43 +45,43 @@ class Car(IEntity):
         )
         
         # Create the wheels
-        circle_fixtureDef = Box2D.b2.fixtureDef(
-            shape=circleShape(radius=self.wheel_size),
+        circle_fixtureDef = b2.fixtureDef(
+            shape=b2.circleShape(radius=self.wheel_size),
             density=density
         )
 
         self.wheel1 = world.CreateDynamicBody(
-            position=car_body.position + (1, -1),
+            position=self.chasssis.position + (1, -1),
             fixtures=circle_fixtureDef,
         )
         
         self.wheel2 = world.CreateDynamicBody(
-            position=car_body.position + (-1, -1),
+            position=self.chasssis.position + (-1, -1),
             fixtures=circle_fixtureDef
         )
         
         # Create joints to attach wheels to the car body
         joint1 = world.CreateRevoluteJoint(
-            bodyA=car_body,
-            bodyB=wheel1,
-            anchor=wheel1.position,
+            bodyA=self.chasssis,
+            bodyB=self.wheel1,
+            anchor=self.wheel1.position,
         )
         
         joint2 = world.CreateRevoluteJoint(
-            bodyA=car_body,
-            bodyB=wheel2,
-            anchor=wheel2.position,
+            bodyA=self.chasssis,
+            bodyB=self.wheel2,
+            anchor=self.wheel2.position,
         )
 
 
-    def upadte(self, env):
+    def update(self, env):
         self.wheel1.angularVelocity = -self.speed
         self.wheel2.angularVelocity = -self.speed
 
     def draw(self, graphics):
-        graphics.draw_polygon(self.body)
-        graphics.circle(wheel1.position, self.wheel_size)
-        graphics.circle(wheel2.position, self.wheel_size)
+        graphics.draw_polygon(self.chasssis)
+        graphics.draw_circle(self.wheel1.position, self.wheel_size, color=(128, 128,128))
+        graphics.draw_circle(self.wheel2.position, self.wheel_size, color=(128, 128,128))
 
 
 

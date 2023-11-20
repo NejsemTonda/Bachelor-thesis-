@@ -12,8 +12,7 @@ env.add_ground(
     anchors=[vec2(30,10)] 
 )
 
-#env.add_anchor(vec2(10, 10))
-#env.add_anchor(vec2(30, 10))
+env.add_car(vec2(5,11))
 
 env.add_plank(vec2(10,10), vec2(20,10))
 env.add_plank(vec2(20,10), vec2(30,10))

@@ -19,10 +19,10 @@ class Graphics:
         pygame.display.flip()
         self.clock.tick(self.fps)
 
-    def draw_circle(self, pos, r=5, color=(255,0,0)):
+    def draw_circle(self, pos, r=0.25, color=(255,0,0)):
         pos = pos*self.PPM
         pos = vec2(pos.x, self.screen_size.y-pos.y)
-        pygame.draw.circle(self.screen, color, pos, r)
+        pygame.draw.circle(self.screen, color, pos, r*self.PPM)
 
 
     def draw_polygon(self, polygon, color=(128, 128, 128)):

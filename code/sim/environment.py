@@ -71,6 +71,9 @@ class Environment:
         self.anchor_dic[pos] = a
         return a 
 
+    def add_car(self, pos):
+        self.car = Car(self.world, pos) 
+
 
     def step(self):
         self.world.Step(1.0/60, 6, 2)
@@ -87,6 +90,10 @@ class Environment:
         #print(list(self.anchor_dic.values()))
         for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
             e.draw(self.graphics)
+
+        self.car.draw(self.graphics)
+        self.car.update(self)
+
 
         self.graphics.draw()
         
