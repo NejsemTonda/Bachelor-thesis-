@@ -20,38 +20,36 @@ class Environment:
     def add_plank(self, start, end):
         plank = Plank(self.world, start, end)
         self.planks.append(plank)
-        for pos in [start,end]:
-            if not pos in self.anchor_dic:
-                print(f"pos was not found, add new anchor at {pos}")
-                self.anchor_dic[pos] = self.add_anchor(pos)
-            else:
-                print(f"anchor at {pos} was found it contains:")
-                anchor = self.anchor_dic[pos]
-                for e in anchor.entities:
-                    print(e)
-                
-            
-            anchor = self.anchor_dic[pos]
 
-            for other in anchor.entities:
-                print("added joint")
-                j = self.world.CreateRevoluteJoint(
-                    bodyA=plank.body,
-                    bodyB=other.body,
-                    anchor=pos
-                )
-                self.joint_tuple.append((j, plank, other))
-                    
-            anchor.entities.append(plank)
-
-        return plank
+        self.record_buildable(plank, start, end)
 
 
     def add_road(self, start, end):
         # TODO implement adding road
-        r = Road(self.world, start, end)
-        self.roads.append(r)
-        return r
+        road = Road(self.world, start, end)
+        self.roads.append(road)
+
+        self.record_buildable(road, start, end)
+        return road
+
+    def record_buildable(self, buildable, start, end):
+        for pos in [start,end]:
+            if not pos in self.anchor_dic:
+                self.anchor_dic[pos] = self.add_anchor(pos)
+            anchor = self.anchor_dic[pos]
+
+
+            for other in anchor.entities:
+                j = self.world.CreateRevoluteJoint(
+                    bodyA=buildable.body,
+                    bodyB=other.body,
+                    anchor=pos
+                )
+                self.joint_tuple.append((j, buildable, other))
+                    
+            anchor.entities.append(buildable)
+
+
 
     def add_ground(self, shape, anchors=[]):
         # TODO 

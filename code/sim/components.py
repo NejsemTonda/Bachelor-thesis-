@@ -3,11 +3,15 @@ from Box2D import b2
 from buildable import Buildable
 from entity import IEntity 
 
+
 class Plank(Buildable):
     def __init__(self, world, start, end, break_limit=float("inf")):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
-        # TODO set flag for collision filtering
+        col_filter = b2.filter(categoryBits=0x0002, maskBits=0xFFF8)
+        print(self.body.fixtures[0].filterData)
+        self.body.fixtures[0].filterData = col_filter
+        
             
     def draw(self, graphics):
         graphics.draw_polygon(self.body, color = self.stress_color)
@@ -17,7 +21,8 @@ class Road(Buildable):
     def __init__(self, world, start, end, break_limit=float("inf")):
         super().__init__(world, start, end) 
         self.break_limit = break_limit
-        # TODO set flag for collision filtering
+        col_filter = b2.filter(categoryBits=0x0001, maskBits=0xFFFF)
+        self.body.fixtures[0].filter = col_filter
             
     def draw(self, graphics):
         # TODO diferent drawing than plank
@@ -72,6 +77,11 @@ class Car(IEntity):
             bodyB=self.wheel2,
             anchor=self.wheel2.position,
         )
+
+        col_filter = b2.filter(categoryBits=0x0003, maskBits=0xFFFD)
+        self.chasssis.fixtures[0].filterData = col_filter
+        self.wheel1.fixtures[0].filterData = col_filter
+        self.wheel2.fixtures[0].filterData = col_filter
 
 
     def update(self, env):

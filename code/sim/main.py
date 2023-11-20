@@ -14,8 +14,8 @@ env.add_ground(
 
 env.add_car(vec2(5,11))
 
-env.add_plank(vec2(10,10), vec2(20,10))
-env.add_plank(vec2(20,10), vec2(30,10))
+env.add_road(vec2(10,10), vec2(20,10))
+env.add_road(vec2(20,10), vec2(30,10))
 
 env.add_plank(vec2(10,10), vec2(15,15))
 env.add_plank(vec2(15,15), vec2(20,10))
