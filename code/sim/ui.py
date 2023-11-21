@@ -15,15 +15,16 @@ class UI():
         self.click_start = None
         self.clicked = False
         self.events = []
+        self.mouse_pos = vec2(0,0)
 
     def update(self, world):
         self.events = []
 
         keys = pygame.key.get_pressed()
         m1 = pygame.mouse.get_pressed()[0]
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_pos = vec2(mouse_pos[0], self.graphics.screen_size[1]-mouse_pos[1]) / self.graphics.PPM
-        mouse_pos = vec2(round(mouse_pos[0]), round(mouse_pos[1]))
+        self.mouse_pos = pygame.mouse.get_pos()
+        self.mouse_pos = vec2(self.mouse_pos[0], self.graphics.screen_size[1]-self.mouse_pos[1]) / self.graphics.PPM
+        self.mouse_pos = vec2(round(self.mouse_pos[0]), round(self.mouse_pos[1]))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -50,10 +51,10 @@ class UI():
                 self.clicked = True
                 if self.state in ["plank", "road"]:
                     if self.click_start is None:
-                        self.click_start = mouse_pos
+                        self.click_start = self.mouse_pos
                         
                     elif self.click_start is not None:
-                        self.events.append(Event("add-"+self.state, data=(self.click_start, mouse_pos)))
+                        self.events.append(Event("add-"+self.state, data=(self.click_start, self.mouse_pos)))
                         self.click_start = None
 
                 if self.state == "remove":
@@ -65,3 +66,8 @@ class UI():
 
         else:
             self.clicked = False
+
+    def draw(self, graphics):
+        graphics.draw_circle(self.mouse_pos, r=0.2)
+        if self.click_start is not None:
+            graphics.draw_circle(self.click_start, r=0.2)

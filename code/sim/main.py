@@ -28,6 +28,7 @@ env.add_plank(vec2(15,15), vec2(25,15))
 env.init_graphics()
 
 ui = UI(env.graphics)
+env.ui = ui
 
 while True:
     env.step()
@@ -47,6 +48,3 @@ while True:
         elif event.type == "remove":
             #TODO
             pass
-
-
-

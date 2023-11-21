@@ -7,6 +7,7 @@ from components import Plank, Road, Car, Ground, Anchor
 class Environment:
     def __init__(self, steps=60):
         self.graphics = None
+        self.ui = None
         self.steps = steps
         self.grounds = []
         self.planks = []
@@ -99,7 +100,7 @@ class Environment:
             e.draw(self.graphics)
 
         self.car.draw(self.graphics)
-
+        if self.ui is not None:
+            self.ui.draw(self.graphics)
 
         self.graphics.draw()
-        
