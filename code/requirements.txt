@@ -1,0 +1,3 @@
+Box2D>=2.3.10
+Box2D_kengz>=2.3.3
+pygame>=2.5.0
