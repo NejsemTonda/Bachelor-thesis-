@@ -21,6 +21,21 @@ class Buildable(IEntity):
 
     def update(self, env):
         if self.forces > self.break_limit:
-            #TODO remove buildable
-            pass 
+            for j in env.world.joints:
+                if self.body == j.bodyA or self.body == j.bodyB:
+                    env.world.DestroyJoint(j)
+                    for joint, e1, e2 in env.joint_tuple:
+                        if j == joint:
+                            env.joint_tuple.remove((joint,e1,e2))
+            for a in env.anchor_dic.values():
+                if self in a.entities:
+                    a.entities.remove(self)
 
+            if self in env.roads:
+                env.roads.remove(self)
+
+            if self in env.planks:
+                env.planks.remove(self)
+
+            env.world.DestroyBody(self.body)
+            self.body = None

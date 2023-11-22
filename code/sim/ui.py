@@ -35,15 +35,15 @@ class UI():
                     self.events.append(Event("quit"))
                 
                 elif event.key == pygame.K_s:
-                    self.events.append(Event("simulate"))
+                    self.events.append(Event("sim"))
 
-                elif event.key == pygame.K_r:
+                elif event.key == pygame.K_d:
                     self.state = "remove"
 
-                elif event.key == pygame.K_w:
+                elif event.key == pygame.K_p:
                     self.state = "plank"
 
-                elif event.key == pygame.K_e:
+                elif event.key == pygame.K_r:
                     self.state = "road"
             
         if m1:
@@ -60,7 +60,7 @@ class UI():
                 if self.state == "remove":
                     for body in world.bodies:
                         for fixtures in body.fixtures:
-                            if fixtures.TestPoint(mouse_pos):
+                            if fixtures.TestPoint(self.mouse_pos):
                                 self.events.append(Event("remove", data=body))
                         
 

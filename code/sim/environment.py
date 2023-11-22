@@ -1,6 +1,6 @@
 from Box2D.b2 import vec2 
 from Box2D import b2
-from helpers import VecDict
+from helpers import VecDict, correctLen
 from components import Plank, Road, Car, Ground, Anchor
 
 
@@ -20,14 +20,17 @@ class Environment:
         self.world = b2.world(gravity=(0, -10), doSleep=True)
 
 
-    def add_plank(self, start, end):
+    def add_plank(self, start, end, max_len=10):
+        end = correctLen(start, end, max_len)
         plank = Plank(self.world, start, end)
         self.planks.append(plank)
 
         self.create_joints(plank, start, end)
+        return plank
 
 
-    def add_road(self, start, end):
+    def add_road(self, start, end, max_len=10):
+        end = correctLen(start, end, max_len)
         road = Road(self.world, start, end)
         self.roads.append(road)
 
@@ -69,12 +72,13 @@ class Environment:
         self.anchor_dic[pos] = a
         return a 
 
-    def add_car(self, pos):
-        self.car = Car(self.world, pos) 
+    def add_car(self, pos, **kwargs):
+        self.car = Car(self.world, pos, **kwargs) 
 
     def step(self):
         for e in self.roads+self.planks:
             e.forces = 0
+
         for joint, e1, e2 in self.joint_tuple:
             force = joint.GetReactionForce(self.steps).length
             e1.forces += force
@@ -83,7 +87,8 @@ class Environment:
         for e in self.planks+self.roads:
             e.update(self)
 
-        self.car.update(self)
+        if self.car is not None:
+            self.car.update(self)
 
         self.world.Step(1.0/self.steps, 6, 2)
 
@@ -99,7 +104,9 @@ class Environment:
         for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
             e.draw(self.graphics)
 
-        self.car.draw(self.graphics)
+        if self.car is not None:
+            self.car.draw(self.graphics)
+
         if self.ui is not None:
             self.ui.draw(self.graphics)
 
