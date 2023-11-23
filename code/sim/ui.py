@@ -71,3 +71,4 @@ class UI():
         graphics.draw_circle(self.mouse_pos, r=0.2)
         if self.click_start is not None:
             graphics.draw_circle(self.click_start, r=0.2)
+            graphics.draw_line(self.click_start, self.mouse_pos)

@@ -31,6 +31,14 @@ class Graphics:
             vertices = [(v[0], self.screen_size.y - v[1]) for v in vertices]
             pygame.draw.polygon(self.screen, color, vertices)
 
+    def draw_line(self, start, end, color=(0,255,0), t=0.1):
+        p1 = start * self.PPM
+        p1 = vec2(p1.x, self.screen_size.y - p1.y)
+        p2 = end * self.PPM
+        p2 = vec2(p2.x, self.screen_size.y - p2.y)
+
+        pygame.draw.line(self.screen, color, p1, p2, int(t*self.PPM))
+
     def draw_edgeshape(self, edgeShape, color = (0,255,0)):
         for shape in [f.shape for f in edgeShape.fixtures]:
             vertices = [(edgeShape.transform * v) * self.PPM for v in shape.vertices]
