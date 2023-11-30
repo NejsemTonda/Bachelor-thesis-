@@ -4,7 +4,7 @@ import math
 
 
 class Buildable(IEntity):
-    def __init__(self, world, start, end):
+    def __init__(self, world, start, end, thickness, density, friction):
         mid = start + (end - start)/2
         a = mid-start
         angle = math.atan2(a[1], a[0])
@@ -12,9 +12,9 @@ class Buildable(IEntity):
         self.body = world.CreateDynamicBody(
             position = mid,
             angle = angle,
-            fixtures = b2.fixtureDef(shape = b2.polygonShape(box=((start-end).length/2, 0.1)),
-                                    density = 1,
-                                    friction = 1
+            fixtures = b2.fixtureDef(shape = b2.polygonShape(box=((start-end).length/2, thickness)),
+                                    density = density,
+                                    friction = friction,
             )
         ) 
         self.forces = 0

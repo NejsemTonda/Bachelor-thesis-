@@ -5,8 +5,8 @@ from entity import IEntity
 
 
 class Plank(Buildable):
-    def __init__(self, world, start, end, break_limit=300):
-        super().__init__(world, start, end) 
+    def __init__(self, world, start, end, thickness=0.1, density=0.1, friction=1, break_limit=300):
+        super().__init__(world, start, end, thickness, density, friction) 
         self.break_limit = break_limit
         col_filter = b2.filter(categoryBits=0x0002, maskBits=0xFFF8)
         self.body.fixtures[0].filterData = col_filter
@@ -18,8 +18,8 @@ class Plank(Buildable):
 
 
 class Road(Buildable):
-    def __init__(self, world, start, end, break_limit=500):
-        super().__init__(world, start, end) 
+    def __init__(self, world, start, end, thickness=0.1, density=0.3, friction=1, break_limit=500):
+        super().__init__(world, start, end, thickness, density, friction) 
         self.break_limit = break_limit
         col_filter = b2.filter(categoryBits=0x0001, maskBits=0xFFFF)
         self.body.fixtures[0].filter = col_filter
