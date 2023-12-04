@@ -24,12 +24,9 @@ class Buildable(IEntity):
 			for j in env.world.joints:
 				if self.body == j.bodyA or self.body == j.bodyB:
 					env.world.DestroyJoint(j)
-					for joint, e1, e2 in env.joint_tuple:
+					for joint, e in env.joint_tuple:
 						if j == joint:
-							env.joint_tuple.remove((joint,e1,e2))
-			for a in env.anchor_dic.values():
-				if self in a.entities:
-					a.entities.remove(self)
+							env.joint_tuple.remove((joint,e))
 
 			if self in env.roads:
 				env.roads.remove(self)

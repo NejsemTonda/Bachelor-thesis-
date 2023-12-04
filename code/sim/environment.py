@@ -6,109 +6,107 @@ import config
 
 
 class Environment:
-    def __init__(self, steps=60):
-        self.graphics = None
-        self.ui = None
-        self.steps = steps
-        self.grounds = []
-        self.planks = []
-        self.roads = []
-        self.car = None
+	def __init__(self, steps=60):
+		self.graphics = None
+		self.ui = None
+		self.steps = steps
+		self.grounds = []
+		self.planks = []
+		self.roads = []
+		self.car = None
 
-        self.anchor_dic = VecDict()
-        self.joint_tuple = []
-        
-        self.world = b2.world(gravity=(0, -10), doSleep=True)
-
-
-    def add_plank(self, start, end, max_len=10):
-        end = correctLen(start, end, max_len)
-        plank = Plank(self.world, start, end)
-        self.planks.append(plank)
-
-        self.create_joints(plank, start, end)
-        return plank
+		self.anchor_dic = VecDict()
+		self.joint_tuple = []
+		
+		self.world = b2.world(gravity=(0, -10), doSleep=True)
 
 
-    def add_road(self, start, end, max_len=10):
-        end = correctLen(start, end, max_len)
-        road = Road(self.world, start, end)
-        self.roads.append(road)
+	def add_plank(self, start, end, max_len=10):
+		end = correctLen(start, end, max_len)
+		plank = Plank(self.world, start, end)
+		self.planks.append(plank)
 
-        self.create_joints(road, start, end)
-        return road
-
-    def create_joints(self, buildable, start, end):
-        for pos in [start,end]:
-            if not pos in self.anchor_dic:
-                self.anchor_dic[pos] = self.add_anchor(pos)   
-            anchor = self.anchor_dic[pos]
-
-            for other in anchor.entities:
-                j = self.world.CreateRevoluteJoint(
-                    bodyA=buildable.body,
-                    bodyB=other.body,
-                    anchor=pos
-                )
-                self.joint_tuple.append((j, buildable, other))
-                    
-            anchor.entities.append(buildable)
+		self.create_joints(plank, start, end)
+		return plank
 
 
+	def add_road(self, start, end, max_len=10):
+		end = correctLen(start, end, max_len)
+		road = Road(self.world, start, end)
+		self.roads.append(road)
 
-    def add_ground(self, shape, anchors=[]):
-        g = Ground(self.world, shape)
-        self.grounds.append(g)
-        for pos in anchors:
-            a = self.add_anchor(pos)
-            a.entities.append(g)
-            self.anchor_dic[pos] = a
-        return g
+		self.create_joints(road, start, end)
+		return road
 
-    def add_anchor(self, pos):
-        a = Anchor(pos)
-        if pos in self.anchor_dic:
-            print(f"on pos {pos} was already anchor - replacing")
+	def create_joints(self, buildable, start, end):
+		for pos in [start,end]:
+			if not pos in self.anchor_dic:
+				self.anchor_dic[pos] = self.add_anchor(pos)   
+				print("created anchor")
+			anchor = self.anchor_dic[pos]
 
-        self.anchor_dic[pos] = a
-        return a 
+			j = self.world.CreateRevoluteJoint(
+				bodyA=buildable.body,
+				bodyB=anchor.body,
+				anchor=pos
+			)
+			print("added joints")
 
-    def add_car(self, pos, **kwargs):
-        self.car = Car(self.world, pos, **kwargs) 
+			self.joint_tuple.append((j, buildable))
 
-    def step(self):
-        for e in self.roads+self.planks:
-            e.forces = 0
 
-        for joint, e1, e2 in self.joint_tuple:
-            force = joint.GetReactionForce(self.steps).length
-            e1.forces += force
-            e2.forces += force
 
-        for e in self.planks+self.roads:
-            e.update(self)
+	def add_ground(self, shape, anchors=[]):
+		g = Ground(self.world, shape)
+		self.grounds.append(g)
+		for pos in anchors:
+			a = self.add_anchor(pos)
+			a.body = g.body
+			self.anchor_dic[pos] = a
+		return g
 
-        if self.car is not None:
-            self.car.update(self)
+	def add_anchor(self, pos):
+		a = Anchor(self.world, pos)
+		if pos in self.anchor_dic:
+			print(f"on pos {pos} was already anchor - replacing")
 
-        self.world.Step(1.0/self.steps, 6, 2)
+		self.anchor_dic[pos] = a
+		return a 
 
-    def init_graphics(self):
-        from graphics import Graphics
-        self.graphics = Graphics()
+	def add_car(self, pos, **kwargs):
+		self.car = Car(self.world, pos, **kwargs) 
 
-    def draw(self):
-        if self.graphics == None:
-            self.init_graphics()
+	def step(self):
+		for e in self.roads+self.planks:
+			e.forces = 0
 
-        self.graphics.clear()
-        for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
-            e.draw(self.graphics)
+		for joint, e in self.joint_tuple:
+			e.forces += joint.GetReactionForce(self.steps).length
 
-        if self.car is not None:
-            self.car.draw(self.graphics)
+		for e in self.planks+self.roads:
+			e.update(self)
 
-        if self.ui is not None:
-            self.ui.draw(self.graphics)
+		if self.car is not None:
+			self.car.update(self)
 
-        self.graphics.draw()
+		self.world.Step(1.0/self.steps, 6, 2)
+
+	def init_graphics(self):
+		from graphics import Graphics
+		self.graphics = Graphics()
+
+	def draw(self):
+		if self.graphics == None:
+			self.init_graphics()
+
+		self.graphics.clear()
+		for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
+			e.draw(self.graphics)
+
+		if self.car is not None:
+			self.car.draw(self.graphics)
+
+		if self.ui is not None:
+			self.ui.draw(self.graphics)
+
+		self.graphics.draw()

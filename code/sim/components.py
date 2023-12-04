@@ -36,6 +36,8 @@ class Car(IEntity):
 		# Create the car body
 		self.wheel_size = wheel_size
 		self.speed = speed
+		col_filter = b2.filter(categoryBits=0x0003, maskBits=0xFFFD)
+
 		self.chasssis = world.CreateDynamicBody(
 			position=pos,
 			fixtures = b2.fixtureDef(
@@ -47,6 +49,7 @@ class Car(IEntity):
 					(-1.15, 0.9),
 					(-1.5, 0.2),
 				]),
+				filter=col_filter,
 				density=density
 			),
 		)
@@ -54,7 +57,8 @@ class Car(IEntity):
 		# Create the wheels
 		circle_fixtureDef = b2.fixtureDef(
 			shape=b2.circleShape(radius=self.wheel_size),
-			density=density
+			density=density,
+			filter=col_filter,
 		)
 
 		self.wheel1 = world.CreateDynamicBody(
@@ -79,11 +83,6 @@ class Car(IEntity):
 			bodyB=self.wheel2,
 			anchor=self.wheel2.position,
 		)
-
-		col_filter = b2.filter(categoryBits=0x0003, maskBits=0xFFFD)
-		self.chasssis.fixtures[0].filterData = col_filter
-		self.wheel1.fixtures[0].filterData = col_filter
-		self.wheel2.fixtures[0].filterData = col_filter
 
 
 	def update(self, env):
@@ -111,9 +110,16 @@ class Ground(IEntity):
 
 
 class Anchor(IEntity):
-	def __init__(self, pos):
+	def __init__(self, world, pos):
 		self.pos = pos
-		self.entities = []
+		self.body = world.CreateDynamicBody(
+			position=pos,
+			fixtures = b2.fixtureDef(
+				shape=b2.circleShape(radius=1),
+				density=0,
+				filter=b2.filter(categoryBits=0x0004, maskBits=0x0000)
+			),
+		)
 
 	def update(self):
 		pass
