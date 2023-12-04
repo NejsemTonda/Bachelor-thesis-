@@ -2,6 +2,7 @@ from Box2D.b2 import vec2
 from Box2D import b2
 from helpers import VecDict, correctLen
 from components import Plank, Road, Car, Ground, Anchor
+import config
 
 
 class Environment:
