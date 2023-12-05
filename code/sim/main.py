@@ -34,6 +34,7 @@ env.add_plank(vec2(15,15), vec2(25,15))
 #env.add_plank(vec2(20,14), vec2(15,15))
 
 
+goal = vec2(40,10)
 
 
 env.init_graphics()
@@ -41,11 +42,14 @@ env.init_graphics()
 ui = UI(env.graphics)
 env.ui = ui
 
+env.goal = goal
+
 sim = False
 while True:
 	if sim:
 		env.step()
 	env.draw()
+	env.graphics.draw_circle(goal, (env.car.chasssis.position - goal).length, color=(255,0,0), hollow=True)
 
 	ui.update(env.world)
 	for event in ui.events:
