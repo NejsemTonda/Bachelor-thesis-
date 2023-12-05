@@ -12,12 +12,11 @@ class Graphics:
 		self.fps = fps
 		self.PPM = PPM
 
-	def clear(self, background=(0,0,0)):
-		self.screen.fill(background)
 
-	def draw(self):
+	def draw(self, background=(0,0,0)):
 		pygame.display.flip()
 		self.clock.tick(self.fps)
+		self.screen.fill(background)
 
 	def draw_circle(self, pos, r=0.25, color=(255,0,0), hollow=False):
 		pos = pos*self.PPM

@@ -38,18 +38,13 @@ goal = vec2(40,10)
 
 
 env.init_graphics()
-
 ui = UI(env.graphics)
-env.ui = ui
 
-env.goal = goal
 
 sim = False
 while True:
 	if sim:
 		env.step()
-	env.draw()
-	env.graphics.draw_circle(goal, (env.car.chasssis.position - goal).length, color=(255,0,0), hollow=True)
 
 	ui.update(env.world)
 	for event in ui.events:
@@ -70,3 +65,6 @@ while True:
 			#TODO
 			pass
 
+	env.graphics.draw_circle(goal, (env.car.chasssis.position - goal).length, color=(255,0,0), hollow=True)
+	ui.draw()
+	env.draw()

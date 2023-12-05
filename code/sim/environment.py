@@ -8,7 +8,6 @@ import config
 class Environment:
 	def __init__(self, steps=60):
 		self.graphics = None
-		self.ui = None
 		self.steps = steps
 		self.grounds = []
 		self.planks = []
@@ -99,14 +98,11 @@ class Environment:
 		if self.graphics == None:
 			self.init_graphics()
 
-		self.graphics.clear()
 		for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
 			e.draw(self.graphics)
 
 		if self.car is not None:
 			self.car.draw(self.graphics)
 
-		if self.ui is not None:
-			self.ui.draw(self.graphics)
 
 		self.graphics.draw()

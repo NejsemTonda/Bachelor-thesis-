@@ -67,8 +67,8 @@ class UI():
 		else:
 			self.clicked = False
 
-	def draw(self, graphics):
-		graphics.draw_circle(self.mouse_pos, r=0.2)
+	def draw(self):
+		self.graphics.draw_circle(self.mouse_pos, r=0.2)
 		if self.click_start is not None:
-			graphics.draw_circle(self.click_start, r=0.2)
-			graphics.draw_line(self.click_start, self.mouse_pos)
+			self.graphics.draw_circle(self.click_start, r=0.2)
+			self.graphics.draw_line(self.click_start, self.mouse_pos)
