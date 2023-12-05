@@ -1,6 +1,7 @@
 import pygame
 from enum import Enum
 from Box2D.b2 import vec2
+from helpers import correctLen
 
 class Event():
 	def __init__(self, type, data=None):
@@ -16,6 +17,7 @@ class UI():
 		self.clicked = False
 		self.events = []
 		self.mouse_pos = vec2(0,0)
+		self.max_plank_len = 10
 
 	def update(self, world):
 		self.events = []
@@ -71,4 +73,5 @@ class UI():
 		self.graphics.draw_circle(self.mouse_pos, r=0.2)
 		if self.click_start is not None:
 			self.graphics.draw_circle(self.click_start, r=0.2)
-			self.graphics.draw_line(self.click_start, self.mouse_pos)
+			end = correctLen(self.click_start, self.mouse_pos, self.max_plank_len)
+			self.graphics.draw_line(self.click_start, end)

@@ -1,4 +1,4 @@
-from entity import IEntity
+from .entity import IEntity
 from Box2D import b2
 import math
 
