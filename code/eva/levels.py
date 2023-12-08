@@ -1,12 +1,15 @@
-from ..sim.environment import Environment
+from sim.environment import Environment
+from sim.components import Car
 from Box2D.b2 import vec2
 from dataclasses import dataclass
 
 @dataclass
 class Level:
-	env: Enviroment
+	env: Environment
 	car: Car
 	goal: vec2
+	bounding_box = (vec2, vec2)
+
 
 
 
