@@ -1,6 +1,6 @@
 from environment import Environment
 from Box2D.b2 import vec2
-from ui import UI
+#from .ui import UI
 
 env = Environment()
 e = 0.1
@@ -34,7 +34,7 @@ env.add_plank(vec2(15,15), vec2(25,15))
 #env.add_plank(vec2(20,14), vec2(15,15))
 
 
-goal = vec2(40,10)
+goal = vec2(38,12)
 
 
 env.init_graphics()
@@ -66,5 +66,6 @@ while True:
 			pass
 
 	env.graphics.draw_circle(goal, (env.car.chasssis.position - goal).length, color=(255,0,0), hollow=True)
+	env.graphics.draw_circle(goal, 0.1, color=(255,0,0))
 	ui.draw()
 	env.draw()

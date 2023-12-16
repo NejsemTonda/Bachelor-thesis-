@@ -1,7 +1,7 @@
-import crossovers
-import mutations
-import fitness
-from agents import Agent, SimpleGenome,Type
+import eva.crossovers
+import eva.mutations
+import eva.fitness
+from eva.agents import Agent, SimpleGenome,Type
 from levels import LevelFactory
 from Box2D.b2 import vec2
 from tqdm import tqdm
@@ -14,7 +14,7 @@ c = Agent(SimpleGenome(level))
 c.genome.clicks = [vec2(10,10), vec2(20,10), vec2(30,10), vec2(25,15), vec2(20,10), vec2(15,15), vec2(10,10),vec2(15,15), vec2(25,15)]
 c.genome.types = [Type.road, Type.road, Type.none, Type.none, Type.none, Type.none, Type.none, Type.none, Type.none]
 
-fitness.simple_fitness(c, LevelFactory.level1(), draw=True)
+eva.fitness.simple_fitness(c, LevelFactory.level1(), draw=True)
 quit()
 
 agents = [Agent(SimpleGenome(level)) for _ in range(1000)]

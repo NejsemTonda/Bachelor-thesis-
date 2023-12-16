@@ -8,8 +8,6 @@ class Level:
 	env: Environment
 	car: Car
 	goal: vec2
-	bounding_box = (vec2, vec2)
-
 
 
 

@@ -1,5 +1,5 @@
 import copy 
-from agents import Type
+from eva.agents import Type
 
 def simple_fitness(agent, level, draw=False):
 	last_click = agent.genome.clicks[0]

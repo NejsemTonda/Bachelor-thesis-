@@ -18,19 +18,26 @@ class Environment:
 		
 		self.world = b2.world(gravity=(0, -10), doSleep=True)
 
+		self.max_plank_len = 4
+		self.max_road_len = 4
+		self.plank_weight = 1
+		self.road_weight = 6.4*self.plank_weight
+		self.plank_limit = 800000
+		self.road_limit = 900000
 
-	def add_plank(self, start, end, max_len=10):
-		end = correctLen(start, end, max_len)
-		plank = Plank(self.world, start, end)
+
+	def add_plank(self, start, end):
+		end = correctLen(start, end, self.max_plank_len)
+		plank = Plank(self.world, start, end, self.plank_limit, self.plank_weight)
 		self.planks.append(plank)
 
 		self.create_joints(plank, start, end)
 		return plank
 
 
-	def add_road(self, start, end, max_len=10):
-		end = correctLen(start, end, max_len)
-		road = Road(self.world, start, end)
+	def add_road(self, start, end):
+		end = correctLen(start, end, self.max_road_len)
+		road = Road(self.world, start, end, self.road_limit, self.road_weight)
 		self.roads.append(road)
 
 		self.create_joints(road, start, end)
@@ -40,15 +47,15 @@ class Environment:
 		for pos in [start,end]:
 			if not pos in self.anchor_dic:
 				self.anchor_dic[pos] = self.add_anchor(pos)   
-				print("created anchor")
 			anchor = self.anchor_dic[pos]
 
-			j = self.world.CreateRevoluteJoint(
+			j = self.world.CreateRopeJoint(
 				bodyA=buildable.body,
 				bodyB=anchor.body,
-				anchor=pos
+				maxLength=0,
+				localAnchorA=buildable.body.position-pos,
+				localAnchorB=(0,0),
 			)
-			print("added joints")
 
 			self.joint_tuple.append((j, buildable))
 
@@ -65,14 +72,13 @@ class Environment:
 
 	def add_anchor(self, pos):
 		a = Anchor(self.world, pos)
-		if pos in self.anchor_dic:
-			print(f"on pos {pos} was already anchor - replacing")
-
 		self.anchor_dic[pos] = a
 		return a 
 
 	def add_car(self, pos, **kwargs):
-		self.car = Car(self.world, pos, **kwargs) 
+		c = Car(self.world, pos, **kwargs) 
+		self.car = c
+		return c
 
 	def step(self):
 		for e in self.roads+self.planks:
@@ -90,7 +96,7 @@ class Environment:
 		self.world.Step(1.0/self.steps, 6, 2)
 
 	def init_graphics(self):
-		from graphics import Graphics
+		from .graphics import Graphics
 		self.graphics = Graphics()
 
 	def draw(self):

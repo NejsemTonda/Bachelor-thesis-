@@ -1,7 +1,7 @@
 import pygame
 from enum import Enum
 from Box2D.b2 import vec2
-from helpers import correctLen
+from .helpers import correctLen
 
 class Event():
 	def __init__(self, type, data=None):
@@ -17,7 +17,7 @@ class UI():
 		self.clicked = False
 		self.events = []
 		self.mouse_pos = vec2(0,0)
-		self.max_plank_len = 10
+		self.max_plank_len = 4
 
 	def update(self, world):
 		self.events = []
