@@ -14,12 +14,12 @@ env.add_ground(
 	anchors=[vec2(30,10), vec2(20,30)] 
 )
 
-car = env.add_car(vec2(5,11+e), density=3)
+car = env.add_car(vec2(5,11+e), density=30)
 env.plank_weight = 2.165
 
 env.add_road(vec2(10,10), vec2(22,10))
 env.add_road(vec2(14,10), vec2(22,10))
-r = env.add_road(vec2(18,10), vec2(25,10))
+env.add_road(vec2(18,10), vec2(25,10))
 env.add_road(vec2(22,10), vec2(29,10))
 env.add_road(vec2(26,10), vec2(30,10))
 
@@ -49,8 +49,6 @@ while True:
 	ui.draw()
 	
 	env.step() if sim else None
-	m = min(m, r.body.position.y)
-	print(m)
 
 	for event in ui.events:
 		if event.type == "quit":

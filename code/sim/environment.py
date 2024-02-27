@@ -22,8 +22,8 @@ class Environment:
 		self.max_road_len = 4
 		self.plank_weight = 1
 		self.road_weight = 6.4*self.plank_weight
-		self.plank_limit = 800000
-		self.road_limit = 900000
+		self.plank_limit = 8000
+		self.road_limit = 9000
 
 
 	def add_plank(self, start, end):
@@ -49,12 +49,10 @@ class Environment:
 				self.anchor_dic[pos] = self.add_anchor(pos)   
 			anchor = self.anchor_dic[pos]
 
-			j = self.world.CreateRopeJoint(
+			j = self.world.CreateRevoluteJoint(
 				bodyA=buildable.body,
 				bodyB=anchor.body,
-				maxLength=0,
-				localAnchorA=buildable.body.position-pos,
-				localAnchorB=(0,0),
+                anchor=pos,
 			)
 
 			self.joint_tuple.append((j, buildable))
