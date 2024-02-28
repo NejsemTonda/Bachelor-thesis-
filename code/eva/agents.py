@@ -22,10 +22,8 @@ class Agent():
 
 
 class SimpleGenome:
-	x_bounds = (0,40)
-	y_bounds = (0,30)
 	def __init__(self, level):
-		self.clicks = [vec2(random.randint(*self.x_bounds), random.randint(*self.y_bounds)) for _ in range(10)]
+		self.clicks = [vec2(random.randint(*level.x_bounds), random.randint(*level.y_bounds)) for _ in range(10)]
 		self.types = [random.choice([Type.plank, Type.road, Type.none]) for _ in range(9)]
 
 	def __repr__(self):
