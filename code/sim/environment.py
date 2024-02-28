@@ -5,7 +5,7 @@ from .components import Plank, Road, Car, Ground, Anchor
 
 
 class Environment:
-	def __init__(self, steps=60):
+	def __init__(self, steps=60, max_plank_len=4, max_road_len=4,buildable_weight=1,buildable_limit=2000):
 		self.graphics = None
 		self.steps = steps
 		self.grounds = []
@@ -18,12 +18,12 @@ class Environment:
 		
 		self.world = b2.world(gravity=(0, -10), doSleep=True)
 
-		self.max_plank_len = 4
-		self.max_road_len = 4
-		self.plank_weight = 1
+		self.max_plank_len = max_plank_len
+		self.max_road_len = max_road_len
+		self.plank_weight = buildable_weight
 		self.road_weight = 6.4*self.plank_weight
-		self.plank_limit = 8000
-		self.road_limit = 9000
+		self.plank_limit = buildable_limit
+		self.road_limit = self.plank_limit * 9/8
 
 
 	def add_plank(self, start, end):

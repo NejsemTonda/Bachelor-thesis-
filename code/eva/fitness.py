@@ -1,22 +1,23 @@
 import copy 
 from eva.agents import Type
 
+
 def simple_fitness(agent, level, draw=False):
 	last_click = agent.genome.clicks[0]
 	for c,t in zip(agent.genome.clicks[1:], agent.genome.types):
 		try:
 			if t == Type.none:
-				pass
+				last_click = c
 			elif t == Type.plank:
-				level.env.add_plank(last_click, c)
+				added = level.env.add_plank(last_click, c)
+				last_click = added.end
 				
 			elif t == Type.road:
-				level.env.add_road(last_click, c)
-
+				added = level.env.add_road(last_click, c)
+				last_click = added.end
 		except AssertionError:
 			pass
 
-		last_click = c
 
 	min_d = float('inf')
 	for _ in range(1000):
