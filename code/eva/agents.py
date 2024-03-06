@@ -19,12 +19,15 @@ class Agent():
 		return self.fitness > other.fitness
 
 
-
-
 class SimpleGenome:
-	def __init__(self, level):
-		self.clicks = [vec2(random.randint(*level.x_bounds), random.randint(*level.y_bounds)) for _ in range(10)]
-		self.types = [random.choice([Type.plank, Type.road, Type.none]) for _ in range(9)]
+	def __init__(self, clicks, types):
+		assert len(clicks) == len(types)+1, f"lengths of clicks and types are mismatched {len(clicks)} {len(types)}"
+		self.clicks = clicks
+		self.types = types
 
+	def new(level, length=20):
+		clicks = [vec2(random.randint(*level.x_bounds), random.randint(*level.y_bounds)) for _ in range(length)]
+		types = [random.choice([Type.plank, Type.road, Type.none]) for _ in range(length-1)]
+		return SimpleGenome(clicks, types)
 	def __repr__(self):
 		return f"clicks = {self.clicks}, types = {self.types}"
