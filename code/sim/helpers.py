@@ -3,15 +3,15 @@ import math
 
 class VecDict(dict):
     def __getitem__(self, key):
-        h = hash((key.x, key.y))
+        h = (key.x, key.y)
         return super().__getitem__(h) 
 
     def __setitem__(self, key, value):
-        h = hash((key.x, key.y))
+        h = (key.x, key.y)
         super().__setitem__(h, value)
 
     def __contains__(self, key):
-        h = hash((key.x, key.y))
+        h = (key.x, key.y)
         return super().__contains__(h)
 
 def correctLen(start, end, max_len):
@@ -30,10 +30,12 @@ def correctLen(start, end, max_len):
 if __name__ == "__main__":
     import random
     import time
-    #d = VecDict()
-    #d[vec2(1,1)] = 1
-    #print(d[vec2(1,1)])
-    #print(vec2(1,1) in d)
+    d = VecDict()
+    d[vec2(1,1)] = 1
+    print(d[vec2(1,1)])
+    print(vec2(1,1) in d)
+    print(d.keys())
+    quit()
     s = time.time()
     for _ in range(100000):
         v1 = vec2(random.randint(0,20),random.randint(0,20))

@@ -37,8 +37,10 @@ class SimpleGenome:
         self.types = types
 
     def new(level, length=20):
-        clicks = [vec2(random.randint(*level.x_bounds), random.randint(*level.y_bounds)) for _ in range(length)]
-        types = [random.choice([Type.plank, Type.road, Type.none]) for _ in range(length-1)]
+        first_anchor = list(level.env.anchor_dic.keys())[0]
+        clicks = [vec2(first_anchor)] + [vec2(random.randint(*level.x_bounds), random.randint(*level.y_bounds)) for _ in range(length)]
+        types = [random.choice([Type.plank, Type.road, Type.none]) for _ in range(length)]
         return SimpleGenome(clicks, types)
+
     def __repr__(self):
         return f"clicks = {self.clicks}, types = {self.types}"
