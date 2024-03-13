@@ -12,6 +12,7 @@ class Population:
     crossover: Callable[[Population], Population]
     mutation: Callable[[Population], Population]
     fitness: Callable[[Agent], float]
+    best: Agent
 
     def __init__(self, size, agent_init, selection, crossover, mutation, fitness):
         self.size = size
@@ -23,12 +24,18 @@ class Population:
 
         self.agents = [Agent(agent_init()) for _ in range(self.size)]
 
-    def generation(self):
         for a in tqdm(self.agents):
             self.fitness(a)
-        best = max(self.agents)
+
+        self.best = max(self.agents)
+
+    def generation(self):
         self.agents = self.selection(self.agents)
         self.agents = self.crossover(self.agents)
         self.agents = self.mutation(self.agents)
+        for a in tqdm(self.agents):
+            self.fitness(a)
 
-        return best
+        self.best = max(self.agents)
+
+        return self.best

@@ -9,9 +9,9 @@ def simple(agents, click_p=0.1, click_max=1, type_p=0.05, type_weigths=[1,1,1]):
             if random.random() < type_p:
                 a.genome.types[i] = random.choices(types, type_weigths)[0]
             if random.random() < click_p:
-                a.genome.clicks[i] += vec2(random.randint(0,click_max),random.randint(0,click_max))
+                a.genome.clicks[i] += vec2(random.randint(-click_max,click_max),random.randint(-click_max,click_max))
 
         if random.random() < click_p:
-                a.genome.clicks[-1] += vec2(random.randint(0,click_max),random.randint(0,click_max))
+                a.genome.clicks[-1] += vec2(random.randint(-click_max,click_max),random.randint(-click_max,click_max))
 
     return agents

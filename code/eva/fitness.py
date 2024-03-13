@@ -38,6 +38,6 @@ def simple_fitness(agent, level, draw=False):
             static = 0
 
         min_d = min(min_d, (car.position - level.goal).length)
-    fitness = min_d
+    fitness = -min_d
     agent.fitness = fitness
     return fitness
