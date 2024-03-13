@@ -1,11 +1,16 @@
 import copy 
 from eva.agents import Type
+from Box2D.b2 import vec2
 
 
 def simple_fitness(agent, level, draw=False):
+    if agent.fitness is not None and not draw:
+        return agent.fitness
+
     level = level()
-    last_click = agent.genome.clicks[0]
-    for c,t in zip(agent.genome.clicks[1:], agent.genome.types):
+    clicks = list(map(vec2, agent.genome.clicks))
+    last_click = clicks[0]
+    for c,t in zip(clicks[1:], agent.genome.types):
         try:
             if t == Type.none:
                 last_click = c
@@ -38,6 +43,6 @@ def simple_fitness(agent, level, draw=False):
             static = 0
 
         min_d = min(min_d, (car.position - level.goal).length)
+
     fitness = -min_d
-    agent.fitness = fitness
     return fitness

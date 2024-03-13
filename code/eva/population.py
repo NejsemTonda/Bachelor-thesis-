@@ -2,6 +2,8 @@ from __future__ import annotations
 from eva.agents import Agent
 from typing import Callable
 from tqdm import tqdm
+import random
+from multiprocessing import Pool
 
 
 
@@ -24,8 +26,12 @@ class Population:
 
         self.agents = [Agent(agent_init()) for _ in range(self.size)]
 
-        for a in tqdm(self.agents):
-            self.fitness(a)
+
+        with Pool(6) as p:
+            r = list(tqdm(p.imap(self.fitness, self.agents), total=len(self.agents)))
+        
+        for a,f in zip(self.agents,r):
+            a.fitness = f
 
         self.best = max(self.agents)
 
@@ -33,8 +39,12 @@ class Population:
         self.agents = self.selection(self.agents)
         self.agents = self.crossover(self.agents)
         self.agents = self.mutation(self.agents)
-        for a in tqdm(self.agents):
-            self.fitness(a)
+
+        with Pool(6) as p:
+            r = list(tqdm(p.imap(self.fitness, self.agents), total=len(self.agents)))
+        
+        for a,f in zip(self.agents,r):
+            a.fitness = f
 
         self.best = max(self.agents)
 
