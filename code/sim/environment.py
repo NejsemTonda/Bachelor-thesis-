@@ -5,7 +5,7 @@ from .components import Plank, Road, Car, Ground, Anchor
 
 
 class Environment:
-    def __init__(self, steps=60, max_plank_len=4, max_road_len=4,buildable_weight=1,buildable_limit=2000):
+    def __init__(self, steps=60, max_plank_len=4, max_road_len=4,buildable_weight=0.6,buildable_limit=1125):
         self.graphics = None
         self.steps = steps
         self.grounds = []
