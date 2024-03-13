@@ -21,7 +21,7 @@ agents = [Agent(SimpleGenome(level)) for _ in range(1000)]
 
 fits = []
 for a in tqdm(agents):
-	fitness.simple_fitness(a, LevelFactory.level1())
+    fitness.simple_fitness(a, LevelFactory.level1())
 
 best = min(agents)
 print(best)
