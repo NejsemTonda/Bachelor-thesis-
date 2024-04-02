@@ -15,7 +15,6 @@ c.genome.clicks = [vec2(10,10), vec2(20,10), vec2(30,10), vec2(25,15), vec2(20,1
 c.genome.types = [Type.road, Type.road, Type.none, Type.none, Type.none, Type.none, Type.none, Type.none, Type.none]
 
 fitness.simple_fitness(c, LevelFactory.level1(), draw=True)
-quit()
 
 agents = [Agent(SimpleGenome(level)) for _ in range(1000)]
 
