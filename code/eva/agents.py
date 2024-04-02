@@ -1,7 +1,7 @@
 import random
 from Box2D.b2 import vec2
 from enum import Enum
-import math
+import numpy as np
 
 class Type(Enum):
     none = 0
@@ -32,3 +32,19 @@ class SimpleGenome:
 
     def __repr__(self):
         return f"clicks = {self.clicks}, types = {self.types}"
+
+class RadianGenome:
+    def __init__(self, clicks, types):
+        assert len(clicks) == len(types), f"lengths of clicks and types are mismatched {len(clicks)} {len(types)}"
+        self.clicks = clicks
+        self.types = types
+
+    def new(level, length=20):
+        clicks = [(level.env.max_plank_len*random.random(), level,random.random()*np.pi) for _ in range(length)]
+        types = random.choices([Type.plank, Type.road, Type.none], k=length)
+        return SimpleGenome(clicks, types)
+
+    def __repr__(self):
+        return f"clicks = {self.clicks}, types = {self.types}"
+
+

@@ -52,4 +52,36 @@ def simple_fitness(agent, level, draw=False):
 
     return fitness
 
+def fitness_radians(aget, level, draw=False)
+    def pol2cart(l, alpha):
+        x = l * np.cos(alpha)
+        y = l * np.sin(alpha)
+        return(x, y)
+
+    if agent.fitness is not None and not draw:
+        return agent.fitness
+
+    level = level()
+    clicks = map(vec2, agent.genome.clicks)
+    last_click = vec2(list(level.env.anchor_dic.keys())[0])
+    for c,t in zip(clicks, agent.genome.types):
+        c = pol2cart(c)
+        try:
+            if t == Type.none:
+                last_click = c
+            elif t == Type.plank:
+                added = level.env.add_plank(last_click, c)
+                last_click = added.end
+                
+            elif t == Type.road:
+                added = level.env.add_road(last_click, c)
+                last_click = added.end
+        except AssertionError:
+            pass
+
+    min_d = simulate(level, draw)
+    fitness = -min_d
+
+    return fitness
+
 

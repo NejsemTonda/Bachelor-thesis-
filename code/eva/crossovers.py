@@ -17,8 +17,6 @@ def n_point(agents, n=1):
         child2_clicks = parent2.clicks[:point]+parent1.clicks[point:]
         child2_types = parent2.types[:point]+parent1.types[point:]
 
-
-
         offspring.append(Agent(SimpleGenome(child1_clicks, child1_types)))
         offspring.append(Agent(SimpleGenome(child2_clicks, child2_types)))
     return offspring
