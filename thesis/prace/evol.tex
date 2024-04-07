@@ -1,23 +1,40 @@
 \chapter{Evoluční Algoritmy}
 
+Nějaké povídání o evolučních algoritmech.
+
 \section{Zakládní definice}
 V této sekci bychom chtěli definovat některé užitečné pojmy a zároveň vysvětlit, jakou hrají roli při návrhu a běhu evolučního algoritmu.
+
 \subsection{Gen}
-Gen představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu představoval, že každé řešení bude binárně kódováno, ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme boilding-blocks daného řešení.
+Gen představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu evolučního algoritmu představoval, že každé řešení bude binárně kódováno (holland citace), ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme jakési stavební kameny daného řešení (hedless chicken citace).
 
 \subsection{Populace a Generace}
-Populace je neuspořádáná množina genů. Populace se ze začatku běhu algoritmu většinou naplní náhodnými geny a postupnout aplikací evolučních operátorů se v ní vyvíjí lepší a lepší řešení. Generace představuje stav populace v konkrétním čase.
+Populace je seznam genů. Ze začatku běhu algoritmu populaci většinou naplníme náhodnými geny a postupnou aplikací genetických operátorů v ní budeme vyvíjet lepší a lepší řešení. Generace představuje stav populace v konkrétním čase.
 
-\subsection{Evoluční operátory}
-Evoluční operátory jsou funkce, které můžeme aplikovat na celou popuplaci a neviiim, explorace exploatace.
+\subsection{Genetické operátory}
+Genetické operátory jsou funkce, které můžeme aplikovat na celou popuplaci s cílem vybrat lepší geny do další generace. Pomocí těchto operátorů můžeme vyvažovat exploraci a exploataci algoritmu a zároveň celou populaci směřovat k optimálnímu řešení (možná citace).
 
 \subsection{Křížení}
+Křižení je genetický operátor, kterým ze dvou nebo více genů (rodičů) můžeme vytvořit nový gen (potomka), který strukturou připomíná oba dva svoje rodiče. Tento proces je inspirován biologickou reprodukcí, kde potomci zdědí vlastnosti obou rodičů, což může vést k vyšší genetické variabilitě v populaci. Je důležité, aby nový potomek nebyl pouze náhodnout kombinací částí genů svých rodičů, ale aby křížení opravdu dávalo z hlediska struktury smysl (headless chicken citace).
 
 \subsection{Mutace}
-
-\subsection{Selekce}
+Mutace je genetický operátor, který může měnit náhodné části genů. Od křížení se liší hlavně tím, že je nezávislá na ostatních genech v populaci. Význam mutací spočívá v udržení genetické diverzity populace, což je zásadní pro průzkum širšího prostoru řešení a předcházení předčasné konvergenci k suboptimálním řešením.
 
 \subsection{Fitness}
+Fitness je funcke, zde ozančená písmenem $f$, taková že $f: G \rightarrow \R$ kde $G$ představuje množinu všech možných genů. V problémech, které budeme chtít řesit evolučními algoritmy, se funkci $f$ obykle snažíme maximalizovat. Jinými slovy, hledáme takový gen $g^* \in G$, že 
+$$g^* = argmax_{g \in G} f(g)$$
+
+Fitness funkce nabízí měřitelnou kvalitu daného genu a pomáhají algoritmu rozlišovat mezi více a méně vhodnými geny. Při návrhu fitness funkce je však nutné být opatrný, aby se předešlo běžným problémům, jako je předčasná konvergence nebo uváznutí v lokálních maximech. Není neobvyklé, že do fitness funkce je zahrnuto více různých komponent, které do výsledné hodnoty příspívají různými vahami. Tímto způsobem můžeme lépe rozlišit kvalitní řešení od těch nekvalitních a poskytnout algoritmu více informací pro efektivní průzkum prostoru řešení. V praxi to může znamenat, že vedle hlavního kritéria, jako je například výkon nebo efektivita, mohou být do fitness funkce zahrnuty i sekundární kritéria, jako je cena nebo estetičnost.
+
+\subsection{Selekce}
+Selekce, nebo také enviromentální selekce, je genetický operátor, který simuluje proces přírodního výběru. Tento operátor přiřazuje jednotlivým genům jejich schopnosti přežívat a reprodukovat se na základě jejich fitness. Ti nejúspěšnější jedinci jsou vybíráni pro reprodukci, zatímco ti méně úspěšní jsou buď eliminováni nebo mají menší šanci přispět svými geny do další generace. Díky selekci se algoritmus soustředí na oblasti vyhledávacího prostoru s vysokým potenciálem, což vede k rychlejší a konvergenci k optimálním řešením. 
 
 \section{Přiklady}
+
+V této části bychom chtěli demonstrovat návrh evolučních operátorů, kterýmu můžeme řešit netriviální problémy.
+
 \subsection{Problém Batohu}
+
+
+
+
