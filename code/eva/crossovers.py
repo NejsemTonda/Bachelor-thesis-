@@ -1,5 +1,22 @@
 import random
-from eva.agents import Agent, SimpleGenome
+from eva.agents import Agent, SimpleGenome, KnapsackGenome
+
+
+def knapsack_cx(agents):
+    offspring = []
+    for i in range(len(agents)//2):
+        parent1 = agents[i].genome
+        parent2 = agents[i*2+1].genome
+
+        point = random.randint(0, len(agents[0].genome))
+
+        child1 = parent1[:point]+parent2[point:]
+        child2 = parent2[:point]+parent1[point:]
+
+        offspring.append(Agent(KnapsackGenome(child1)))
+        offspring.append(Agent(KnapsackGenome(child2)))
+
+    return offspring
 
 def n_point(agents, n=1):
     assert n < len(agents[0].genome.types), "cannot perform {n}-point crossover on genome of len={len(agents[0].genome.types)}"

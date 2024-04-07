@@ -8,7 +8,7 @@ class Type(Enum):
     plank = 1
     road = 2
 
-class Agent():
+class Agent:
     def __init__(self, genome):
         self.fitness = None
         self.genome = genome
@@ -18,6 +18,14 @@ class Agent():
 
     def __gt__(self, other):
         return self.fitness > other.fitness
+
+class KnapsackGenome(list):
+    def new(k_len):
+        l = ["1" if random.random() < 0.5 else "0" for _ in range(k_len)]
+        return KnapsackGenome(l)
+
+    def __repr__(self):
+        return "".join(self)
 
 class SimpleGenome:
     def __init__(self, clicks, types):
@@ -40,7 +48,7 @@ class RadianGenome:
         self.types = types
 
     def new(level, length=20):
-        clicks = [(level.env.max_plank_len*random.random(), level,random.random()*np.pi) for _ in range(length)]
+        clicks = [(level.env.max_plank_len*random.random(), random.random()*np.pi) for _ in range(length)]
         types = random.choices([Type.plank, Type.road, Type.none], k=length)
         return SimpleGenome(clicks, types)
 
@@ -48,3 +56,8 @@ class RadianGenome:
         return f"clicks = {self.clicks}, types = {self.types}"
 
 
+if __name__ == "__main__":
+    g = KnapsackGenome.new(10)
+    from IPython import embed
+    embed()
+    quit() 

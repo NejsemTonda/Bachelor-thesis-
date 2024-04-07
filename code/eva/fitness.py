@@ -4,6 +4,23 @@ from Box2D.b2 import vec2
 import numpy as np
 
 
+def knapsack_fit(agent, knapsack):
+    items = knapsack[0]
+    max_w = knapsack[1]
+
+    current_w = 0
+    current_val = 0
+
+    for g, item in zip(agent.genome, items):
+        if g == "1":
+            current_w += item['weight']
+            current_val += item['value']
+        if current_w > max_w:
+            return 0
+
+    return current_val
+
+
 def simulate(level, draw=False):
     min_d = float('inf')
     static = 0
@@ -52,7 +69,7 @@ def simple_fitness(agent, level, draw=False):
 
     return fitness
 
-def fitness_radians(aget, level, draw=False)
+def fitness_radians(agent, level, draw=False):
     def pol2cart(l, alpha):
         x = l * np.cos(alpha)
         y = l * np.sin(alpha)
@@ -62,10 +79,9 @@ def fitness_radians(aget, level, draw=False)
         return agent.fitness
 
     level = level()
-    clicks = map(vec2, agent.genome.clicks)
+    clicks = map(lambda x: vec2(pol2cart(x[0], x[1])), agent.genome.clicks) 
     last_click = vec2(list(level.env.anchor_dic.keys())[0])
     for c,t in zip(clicks, agent.genome.types):
-        c = pol2cart(c)
         try:
             if t == Type.none:
                 last_click = c
