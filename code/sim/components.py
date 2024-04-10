@@ -3,9 +3,10 @@ from Box2D import b2
 from .buildable import Buildable
 from .entity import IEntity 
 
+SCALER = 4
 
 class Plank(Buildable):
-    def __init__(self, world, start, end, break_limit, density=0.1, thickness=0.1, friction=1):
+    def __init__(self, world, start, end, break_limit, density=0.1, thickness=0.07, friction=1):
         super().__init__(world, start, end, thickness, density, friction) 
         self.break_limit = break_limit
         col_filter = b2.filter(maskBits=0x0)
@@ -18,7 +19,7 @@ class Plank(Buildable):
 
 
 class Road(Buildable):
-    def __init__(self, world, start, end, break_limit, density=0.3, thickness=0.1, friction=1):
+    def __init__(self, world, start, end, break_limit, density=0.3, thickness=0.07, friction=1):
         super().__init__(world, start, end, thickness, density, friction) 
         self.break_limit = break_limit
         col_filter = b2.filter(categoryBits=0x0002, maskBits=0x0004)
@@ -32,7 +33,7 @@ class Road(Buildable):
 
 
 class Car(IEntity):
-    def __init__(self, world, pos, speed=10, density=1, wheel_size=0.4):
+    def __init__(self, world, pos, speed=10, density=1, wheel_size=0.2):
         # Create the car body
         self.wheel_size = wheel_size
         self.speed = speed
@@ -42,12 +43,12 @@ class Car(IEntity):
             position=pos,
             fixtures = b2.fixtureDef(
                 shape=b2.polygonShape(vertices=[
-                    (-1.5, -0.5),
-                    (1.5, -0.5),
-                    (1.5, 0.0),
-                    (0.0, 0.9),
-                    (-1.15, 0.9),
-                    (-1.5, 0.2),
+                    (-1.5   /2, -0.5  /2),
+                    (1.5    /2, -0.5  /2),
+                    (1.5    /2, 0.0   /2),
+                    (0.0    /2, 0.9   /2),
+                    (-1.15  /2, 0.9   /2),
+                    (-1.5   /2, 0.2   /2),
                 ]),
                 filter=col_filter,
                 density=density
@@ -62,12 +63,12 @@ class Car(IEntity):
         )
 
         self.wheel1 = world.CreateDynamicBody(
-            position=self.chassis.position + (1, -1),
+            position=self.chassis.position + (0.5, -0.5),
             fixtures=circle_fixtureDef,
         )
         
         self.wheel2 = world.CreateDynamicBody(
-            position=self.chassis.position + (-1, -1),
+            position=self.chassis.position + (-0.5, -0.5),
             fixtures=circle_fixtureDef
         )
         
@@ -98,6 +99,7 @@ class Car(IEntity):
 
 class Ground(IEntity):
     def __init__(self, world, shape):
+        shape = [(s[0], s[1]) for s in shape]
         self.body = world.CreateBody()
         self.body.CreateEdgeChain(shape)
         col_filter = b2.filter(categoryBits=0x0008, maskBits=0x0004)

@@ -45,7 +45,7 @@ def run_experiemt(exp, name=None, title=None, save=False):
     plt.xlabel("Number of Fitness Evaluations")
     plt.ylabel("Fitness")
     if save:
-        plt.savefig(name+".pdf")
+        plt.savefig("data/pictures/"+name+".pdf")
     else:
         plt.show()
 

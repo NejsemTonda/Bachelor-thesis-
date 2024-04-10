@@ -18,20 +18,20 @@ class LevelFactory:
     def level1():
         env = Environment()
         env.add_ground(
-            [(0,10+e), (12,10+e), (12,0)],
-            anchors=[vec2(12,10), vec2(12, 6)] 
+            [(0,5+e), (6,5+e), (6,0)],
+            anchors=[vec2(6,5), vec2(6, 3)] 
         )
         env.add_ground(
-            [(40,10+e), (28,10+e), (28,0)],
-            anchors=[vec2(28,10), vec2(28, 6)] 
+            [(20,5+e), (14,5+e), (14,0)],
+            anchors=[vec2(14,5), vec2(14, 3)] 
         )
         
-        car = env.add_car(vec2(5,11+e), density=3)
+        car = env.add_car(vec2(2.5,5.5+e), density=3)
 
-        goal = vec2(38,12)
+        goal = vec2(19,6)
 
-        x_bounds = (0,40)
-        y_bounds = (0,30)
+        x_bounds = (0,20)
+        y_bounds = (0,15)
 
         return Level(env, car, goal, x_bounds, y_bounds)
 
@@ -50,20 +50,40 @@ class LevelFactory:
     def test():
         env = Environment()
         env.add_ground(
-            [(0,10+e), (12,10+e), (12,0)],
-            anchors=[vec2(12,10), vec2(12, 6)]#, vec2(20, 10)] 
+            [(0,5+e), (6,5+e), (6,0)],
+            anchors=[vec2(6,5), vec2(6, 3),
+                vec2(2, 14), vec2(6, 14),
+                vec2(2, 13), vec2(14, 13),
+                vec2(2, 12), vec2(16, 12),
+           ]
         )
         env.add_ground(
-            [(40,10+e), (28,10+e), (28,0)],
-            anchors=[vec2(28,10), vec2(28, 6)] 
+            [(20,5+e), (14,5+e), (14,0)],
+            anchors=[vec2(14,5), vec2(14, 3)] 
         )
-        
-        car = env.add_car(vec2(5,11+e), density=3)
+        env.add_road(vec2(2,14), vec2(4,14))
+        env.add_road(vec2(4,14), vec2(6,14))
 
-        goal = vec2(38,12)
+        env.add_plank(vec2(2,13), vec2(4,13))
+        env.add_plank(vec2(4,13), vec2(6,13))
+        env.add_plank(vec2(6,13), vec2(8,13))
+        env.add_plank(vec2(8,13), vec2(10,13))
+        env.add_plank(vec2(10,13),vec2(12,13))
+        env.add_plank(vec2(12,13),vec2(14,13))
+        env.add_plank(vec2(2,12), vec2(4,12))
+        env.add_plank(vec2(4,12), vec2(6,12))
+        env.add_plank(vec2(6,12), vec2(8,12))
+        env.add_plank(vec2(8,12), vec2(10,12))
+        env.add_plank(vec2(10,12),vec2(12,12))
+        env.add_plank(vec2(12,12),vec2(14,12))
+        env.add_plank(vec2(14,12),vec2(16,12))
 
-        x_bounds = (0,40)
-        y_bounds = (0,30)
+        car = env.add_car(vec2(5,5.5+e), density=3)
+
+        goal = vec2(19,6)
+
+        x_bounds = (0,20)
+        y_bounds = (0,15)
 
         return Level(env, car, goal, x_bounds, y_bounds)
 

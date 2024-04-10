@@ -2,7 +2,7 @@ from Box2D.b2 import vec2
 import pygame        
 
 class Graphics:
-    def __init__(self, PPM=20, size=vec2(800,600), fps=60):
+    def __init__(self, PPM=40, size=vec2(800,600), fps=60):
 
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -18,7 +18,7 @@ class Graphics:
         self.clock.tick(self.fps)
         self.screen.fill(background)
 
-    def draw_circle(self, pos, r=0.25, color=(255,0,0), hollow=False):
+    def draw_circle(self, pos, r=0.15, color=(255,0,0), hollow=False):
         pos = pos*self.PPM
         pos = vec2(pos.x, self.screen_size.y-pos.y)
         if hollow:

@@ -3,6 +3,7 @@ from enum import Enum
 from Box2D.b2 import vec2
 from .helpers import correctLen
 
+SCALER = 4
 class Event():
     def __init__(self, type, data=None):
         self.type = type
@@ -10,14 +11,14 @@ class Event():
             self.data = data
 
 class UI():
-    def __init__(self, graphics):
-        self.graphics = graphics
+    def __init__(self, env):
+        self.graphics = env.graphics
         self.state = "plank"
         self.click_start = None
         self.clicked = False
         self.events = []
         self.mouse_pos = vec2(0,0)
-        self.max_plank_len = 4
+        self.max_plank_len = env.max_plank_len
 
     def update(self, world):
         self.events = []
@@ -26,7 +27,7 @@ class UI():
         m1 = pygame.mouse.get_pressed()[0]
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse_pos = vec2(self.mouse_pos[0], self.graphics.screen_size[1]-self.mouse_pos[1]) / self.graphics.PPM
-        self.mouse_pos = vec2(round(self.mouse_pos[0]), round(self.mouse_pos[1]))
+        self.mouse_pos = vec2(round(self.mouse_pos[0]*SCALER)/SCALER,round(self.mouse_pos[1]*SCALER)/SCALER)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -70,7 +71,7 @@ class UI():
             self.clicked = False
 
     def draw(self):
-        self.graphics.draw_circle(self.mouse_pos, r=0.2)
+        self.graphics.draw_circle(self.mouse_pos, r=0.1)
         if self.click_start is not None:
             self.graphics.draw_circle(self.click_start, r=0.2)
             end = correctLen(self.click_start, self.mouse_pos, self.max_plank_len)

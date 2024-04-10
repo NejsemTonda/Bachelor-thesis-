@@ -2,71 +2,63 @@ import sys
 from sim.environment import Environment
 from sim.ui import UI
 from Box2D.b2 import vec2
+from Box2D import b2Vec2
 from levels import LevelFactory
 import random 
 
+import numpy as np
 
 
-env = Environment()
-e = 0.1
-env.add_ground(
-    [(0,10+e), (10,10+e), (10,0)],
-    anchors=[vec2(10,10)] 
-)
-env.add_ground(
-    [(40,10+e), (30,10+e), (30,0)],
-    anchors=[vec2(30,10), vec2(20,30)] 
-)
-#car = env.add_car(vec2(5,11+e), density=30)
 
-#env.add_road(vec2(10,10), vec2(22,10))
-#env.add_road(vec2(14,10), vec2(22,10))
-#r = env.add_road(vec2(18,10), vec2(25,10))
-#env.add_road(vec2(22,10), vec2(29,10))
-#env.add_road(vec2(26,10), vec2(30,10))
+#lvl = LevelFactory.level1()
+#env = lvl.env
+#car = lvl.car
+#env.add_road(vec2(6,5), vec2(8,5))
+#env.add_road(vec2(8,5), vec2(10,5))
+#env.add_road(vec2(10,5), vec2(12,5))
+#env.add_road(vec2(12,5), vec2(19,5))
 #
-#env.add_plank(vec2(12,13), vec2(14,10))
-#env.add_plank(vec2(14,10), vec2(16,13))
-#env.add_plank(vec2(16,13), vec2(18,10))
-#env.add_plank(vec2(18,10), vec2(20,13))
-#env.add_plank(vec2(20,13), vec2(22,10))
-#env.add_plank(vec2(22,10), vec2(24,13))
-#env.add_plank(vec2(24,13), vec2(26,10))
-#env.add_plank(vec2(26,10), vec2(28,13))
-#env.add_plank(vec2(28,13), vec2(30,10))
-#env.add_plank(vec2(12,13), vec2(10,10))
-#env.add_plank(vec2(12,13), vec2(16,13))
-#env.add_plank(vec2(16,13), vec2(20,13))
-#env.add_plank(vec2(20,13), vec2(24,13))
-#env.add_plank(vec2(24,13), vec2(28,13))
-
-
+#env.add_plank(vec2(6,3),  vec2(7,4))
+#env.add_plank(vec2(7,4),  vec2(8,5))
+#env.add_plank(vec2(7,4),  vec2(6,5))
+#env.add_plank(vec2(14,3),  vec2(13,4))
+#env.add_plank(vec2(13,4),  vec2(12,5))
+#env.add_plank(vec2(13,4),  vec2(14,5))
+#env.add_plank(vec2(12,5), vec2(10,6.5))
+#env.add_plank(vec2(10,5), vec2(10.5,6))
+#env.add_plank(vec2(10,5), vec2(9.5,6))
+#env.add_plank(vec2(9.5,6), vec2(8,5))
+#env.add_plank(vec2(9.5,6), vec2(10.5,6))
 
 lvl = LevelFactory.test()
 env = lvl.env
 car = lvl.car
-env.add_road(vec2(12,10), vec2(16,10))
-env.add_road(vec2(16,10), vec2(20,10))
-env.add_road(vec2(20,10), vec2(24,10))
-env.add_road(vec2(24,10), vec2(38,10))
 
-env.add_plank(vec2(12,6),  vec2(14,8))
-env.add_plank(vec2(14,8),  vec2(16,10))
-env.add_plank(vec2(14,8),  vec2(12,10))
-env.add_plank(vec2(28,6),  vec2(26,8))
-env.add_plank(vec2(26,8),  vec2(24,10))
-#env.add_plank(vec2(26,8),  vec2(28,10))
-#env.add_plank(vec2(24,10), vec2(20,13))
-#env.add_plank(vec2(20,10), vec2(21,12))
-#env.add_plank(vec2(20,10), vec2(19,12))
-#env.add_plank(vec2(19,12), vec2(16,10))
-#env.add_plank(vec2(19,12), vec2(21,12))
+env.add_road(b2Vec2(6,5), b2Vec2(10.25,5))
+env.add_road(b2Vec2(8,5), b2Vec2(12,4.75))
+env.add_road(b2Vec2(10,5), b2Vec2(13,5.25))
+env.add_road(b2Vec2(12,5), b2Vec2(14,5))
+env.add_plank(b2Vec2(6,5), b2Vec2(7.25,6.25))
+env.add_plank(b2Vec2(7.25,6.25), b2Vec2(8,5))
+env.add_plank(b2Vec2(8,5), b2Vec2(9,6.25))
+env.add_plank(b2Vec2(9,6.25), b2Vec2(10,5))
+env.add_plank(b2Vec2(10,5), b2Vec2(11,6.25))
+env.add_plank(b2Vec2(11,6.25), b2Vec2(12,5))
+env.add_plank(b2Vec2(12,5), b2Vec2(13,6.5))
+env.add_plank(b2Vec2(13,6.5), b2Vec2(14,5))
+env.add_plank(b2Vec2(11,6.25), b2Vec2(13,6.5))
+env.add_plank(b2Vec2(9,6.25), b2Vec2(11,6.25))
+env.add_plank(b2Vec2(7.25,6.25), b2Vec2(9,6.25))
 
 
 env.init_graphics()
-ui = UI(env.graphics)
+for i in range(1000):    
+    env.draw()
+    env.step()
 
-sim = True
+ui = UI(env)
+
+sim = False
 while True:
     env.draw()
     ui.update(env.world)
@@ -79,11 +71,11 @@ while True:
             quit()
 
         elif event.type == "add-plank":
-            print(event.data)
+            print(f"env.add_plank{event.data}")
             env.add_plank(*event.data)
 
         elif event.type == "add-road":
-            print(event.data)
+            print(f"env.add_road{event.data}")
             env.add_road(*event.data)
 
         elif event.type == "sim":

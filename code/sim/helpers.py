@@ -14,13 +14,14 @@ class VecDict(dict):
         h = (key.x, key.y)
         return super().__contains__(h)
 
+SCALER = 4
 def correctLen(start, end, max_len):
     diff = end-start
     if diff.lengthSquared > max_len**2:
         angle = math.atan2(diff.y, diff.x)
         end = start+vec2(math.cos(angle), math.sin(angle))*max_len
-    x = math.floor(end.x) if diff.x > 0 else math.ceil(end.x)
-    y = math.floor(end.y) if diff.y > 0 else math.ceil(end.y)
+    x = math.floor(SCALER*end.x)/SCALER if diff.x > 0 else math.ceil(SCALER*end.x)/SCALER
+    y = math.floor(SCALER*end.y)/SCALER if diff.y > 0 else math.ceil(SCALER*end.y)/SCALER
     return vec2(x,y)
 
 

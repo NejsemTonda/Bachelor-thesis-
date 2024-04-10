@@ -2,11 +2,11 @@ from .entity import IEntity
 from Box2D import b2
 import math
 
-
+SCALER = 4
 class Buildable(IEntity):
     def __init__(self, world, start, end, thickness, density, friction):
-        self.start = start
-        self.end = end
+        self.start = start*SCALER
+        self.end = end*SCALER
         mid = start + (end - start)/2
         a = mid-start
         angle = math.atan2(a[1], a[0])
