@@ -5,17 +5,21 @@ Nějaké povídání o evolučních algoritmech.
 \section{Zakládní definice}
 V této sekci bychom chtěli definovat některé užitečné pojmy a zároveň vysvětlit, jakou hrají roli při návrhu a běhu evolučního algoritmu.
 
-\subsection{Gen}
-Gen představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu evolučního algoritmu představoval, že každé řešení bude binárně kódováno (holland citace), ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme jakési stavební kameny daného řešení (hedless chicken citace).
+\subsection{Gen a Jedinec}
+Gen představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu evolučního algoritmu představoval, že každé řešení bude binárně kódováno (holland citace), ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme jakési stavební bloky daného řešení (hedless chicken citace).
+
+Jedincem pak myslíme zastoupení genu v populaci.
 
 \subsection{Populace a Generace}
-Populace je seznam genů. Ze začatku běhu algoritmu populaci většinou naplníme náhodnými geny a postupnou aplikací genetických operátorů v ní budeme vyvíjet lepší a lepší řešení. Generace představuje stav populace v konkrétním čase.
+Populace je seznam jedinců. Ze začatku běhu algoritmu populaci většinou naplníme jedinci s náhodnými geny a postupnou aplikací genetických operátorů v ní budeme vyvíjet lepší a lepší řešení. Generace představuje stav populace v konkrétním čase.
 
 \subsection{Genetické operátory}
-Genetické operátory jsou funkce, které můžeme aplikovat na celou popuplaci s cílem vybrat lepší geny do další generace. Pomocí těchto operátorů můžeme vyvažovat exploraci a exploataci algoritmu a zároveň celou populaci směřovat k optimálnímu řešení (možná citace).
+Genetické operátory jsou funkce, které můžeme aplikovat na celou popuplaci s cílem vybrat lepší jedince do další generace. Pomocí těchto operátorů můžeme vyvažovat exploraci a exploataci algoritmu a zároveň celou populaci směřovat k optimálnímu řešení (možná citace).
+
+V kontextu genetických operátorů budeme často mluvit o rodičich a potomcích. Rodičemi myslíme ty jedince, které se v populaci nachází před aplikací genetických operátorů, potomky pak ty, které se nachazí po aplikaci, neboli v další generaci. 
 
 \subsection{Křížení}
-Křižení je genetický operátor, kterým ze dvou nebo více genů (rodičů) můžeme vytvořit nový gen (potomka), který strukturou připomíná oba dva svoje rodiče. Tento proces je inspirován biologickou reprodukcí, kde potomci zdědí vlastnosti obou rodičů, což může vést k vyšší genetické variabilitě v populaci. Je důležité, aby nový potomek nebyl pouze náhodnout kombinací částí genů svých rodičů, ale aby křížení opravdu dávalo z hlediska struktury smysl (headless chicken citace).
+Křižení je genetický operátor, kterým ze dvou nebo více jedinců (rodičů) můžeme vytvořit nového jedince (potomka), který strukturou připomíná oba dva svoje rodiče. Tento proces je inspirován biologickou reprodukcí, kde potomci zdědí vlastnosti obou rodičů, což může vést k vyšší genetické variabilitě v populaci. Je důležité, aby nový potomek nebyl pouze náhodnout kombinací částí genů svých rodičů, ale aby křížení opravdu dávalo z hlediska struktury smysl (headless chicken citace).
 
 \subsection{Mutace}
 Mutace je genetický operátor, který může měnit náhodné části genů. Od křížení se liší hlavně tím, že je nezávislá na ostatních genech v populaci. Význam mutací spočívá v udržení genetické diverzity populace, což je zásadní pro průzkum širšího prostoru řešení a předcházení předčasné konvergenci k suboptimálním řešením.
@@ -27,14 +31,102 @@ $$g^* = argmax_{g \in G} f(g)$$
 Fitness funkce nabízí měřitelnou kvalitu daného genu a pomáhají algoritmu rozlišovat mezi více a méně vhodnými geny. Při návrhu fitness funkce je však nutné být opatrný, aby se předešlo běžným problémům, jako je předčasná konvergence nebo uváznutí v lokálních maximech. Není neobvyklé, že do fitness funkce je zahrnuto více různých komponent, které do výsledné hodnoty příspívají různými vahami. Tímto způsobem můžeme lépe rozlišit kvalitní řešení od těch nekvalitních a poskytnout algoritmu více informací pro efektivní průzkum prostoru řešení. V praxi to může znamenat, že vedle hlavního kritéria, jako je například výkon nebo efektivita, mohou být do fitness funkce zahrnuty i sekundární kritéria, jako je cena nebo estetičnost.
 
 \subsection{Selekce}
-Selekce, nebo také enviromentální selekce, je genetický operátor, který simuluje proces přírodního výběru. Tento operátor přiřazuje jednotlivým genům jejich schopnosti přežívat a reprodukovat se na základě jejich fitness. Ti nejúspěšnější jedinci jsou vybíráni pro reprodukci, zatímco ti méně úspěšní jsou buď eliminováni nebo mají menší šanci přispět svými geny do další generace. Díky selekci se algoritmus soustředí na oblasti vyhledávacího prostoru s vysokým potenciálem, což vede k rychlejší a konvergenci k optimálním řešením. 
+Selekce, nebo také enviromentální selekce, je genetický operátor, který simuluje proces přírodního výběru. Tento operátor přiřazuje jednotlivým jedincům jejich schopnosti přežívat a reprodukovat se na základě jejich fitness. Ti nejúspěšnější jedinci jsou vybíráni pro reprodukci, zatímco ti méně úspěšní jsou buď eliminováni nebo mají menší šanci přispět svými geny do další generace. Díky selekci se algoritmus soustředí na oblasti vyhledávacího prostoru s vysokým potenciálem, což vede k rychlejší a konvergenci k optimálním řešením. 
+
+V kontextu selekce je třebe notace často používaných stragtegií pro výběr nové populace
+
+$(\mu + \lambda)$ selekce většinou označuje postup, kdy z $\mu$ rodičů vytvoříme $\lambda$ potomků. Rodiče a potomci jsou následně sloučeni dohromady a z této skupiny je vybráno nejlepších $\mu$ jedinců, kteří pokračují do další generace. Tímto způsobem si v populaci můžeme udržet ty nejlepší geny z předchozích generací a máme jistotu, že pokud je následující generace v průměru horší než ta předešlá, neztratíme všechny dobré geny.
+
+$(\mu, \lambda)$ selekce označuje postup, kdy z $\mu$ rodičů vytvoříme $\lambda$ potomků. Z těchto potomků vybereme $\mu$ jedinců, kteří nahradí předchozí populaci.Tento postup, kdy jsou všichni původní rodiče zahozeni, usnadňuje překonání lokálních minim. To je zvláště výhodné v případech, kdy je prostor řešení bohatý na lokální minima (citace kniha). 
+
+\section{Evoluční algoritmus}
+
+doplnit něco tady
+
+\begin{algorithm}
+\caption{Jednoduchý evoluční algoritmus}
+\begin{algorithmic}[1]  % [1] způsobí, že číslujeme kroky algoritmu
+\Function{EA}{Selekce, Křížení, Mutace, Fitness}
+	\State $p \gets \mbox{náhodně inicializujeme populaci}$
+    \State $f \gets Fitness(p_1), \dots, Fitness(p_n)$ \Comment{ohodnotíme fitness pro každého jedince}
+	\While{$\mbox{není dosaženo zastavovací kriterium}$}
+		\State $p \gets \mbox{Selekce}(p, f)$
+		\State $p \gets \mbox{Křížení}(p)$
+		\State $p \gets \mbox{Mutace}(p)$
+        \State $f \gets \mbox{Fitness}(p_1), \dots, Fitness(p_n)$
+    \EndWhile
+    \State Vrátíme nejlepšího jedince z $p$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
 
 \section{Přiklady}
 
-V této části bychom chtěli demonstrovat návrh evolučních operátorů, kterýmu můžeme řešit netriviální problémy.
+V této části bychom chtěli ukázat, jak lze navrhnout evoluční algortimus pro řešení některých vybraných netriviálních problémů.
 
 \subsection{Problém Batohu}
 
+Problém batohu je generalizace mnoha industriálních problémů (citace knížka). Představme si, že se balíme třeba na několika denní tůru do hor a s sebou bychom si chtěli zabalit batůžek.Chtěli bychom s sebou mít co nejužitečnějši věci, ale zároveň si nemůžeme vzít všechno, protože bychom to neunesli. Problém batohu spočívá v tom, jak si vybrat věci, které si s sebou zabalíme, tak abychom maximalizovali užitek a zároveň se vešli do našeho stanoveného limitu.
+
+Formálněji se tento problém definuje následovně. Je dána množina $n$ předmětů s hmotnostmi $h_1, \dots, h_n \in \N$, cenami $c_1, \dots, c_n \in \N$ a maximální hmotnost $H \in N$. Hledáme takovou podmožinu $p \subseteq \{1, \dots n\}$, pro kterou platí, že $\sum_{i \in P} h_i \leq H$ a zároveň $\sum_{i \in P} c_i$ je co největší.
+
+Jako ilustrační řešení tomuto problému jsme navrhli tyto evoluční operátory a reprezentace:
+\begin{itemize}
+    \item Gen bude řetežec $\alpha \in \{0,1\}^n$, kde $\alpha[i]$ ($i$-tý prvek z řetezce), zda jsme se rozhodli vybrat $i$-tý prvek do množiny $p$ nebo ne. Pro jednodušší značení při popisování ostatní operátorů budeme $\alpha[i:]$ značit podřetezec $\alpha[i] + \alpha[i+1] + \dots + \alpha[n]$ a $\alpha[:i]$ značit podřetezec $\alpha[0] + \alpha[1] + \dots + \alpha[i-1]$ 
+    \item Jako selekci jsme zvolili turnajovou selekci (algortimus x) 
+    \item Jako mutaci jsem zvolili jednobodové křížení (algoritmus x)
+    \item Fitness funkci jsme popsali v algoritmus x
+\end{itemize}
+
+\begin{algorithm}
+\caption{Turnajová selekce}
+\begin{algorithmic}[1]  % [1] způsobí, že číslujeme kroky algoritmu
+\Function{Tournament}{$p, f, k$}
+    \State $n \gets length(p)$ 
+    \State $o \gets []$
+    \While $length(o) < n$
+        \State $t \gets chooseK(p, k)$ \Comment{Náhodně vybere k jedinců z populace}
+        \State $b \gets$ Nejlepší jedinec z $t$
+        \State $o \gets o + b$
+    \EndWhile
+    \State Vrátíme $o$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Jednoduché jednobodové křížení}
+\begin{algorithmic}[1]  % [1] způsobí, že číslujeme kroky algoritmu
+\Function{Xover}{$p$}
+    \State $i \gets 0$
+    \State $o \gets []$
+    \While $i < length(p)/2$
+       \State $parent1 \gets p_i$ 
+       \State $parent1 \gets p_{2*i+1}$ 
+       \State $x \gets random(0, length(parent1))$
+       \State $child1 \gets parent1[x:] + parent2[:x]$
+       \State $child2 \gets parent1[:x] + parent2[x:]$
+       \State $o \gets o + child1 + child2$
+    \EndWhile
+    \State Vrátíme $o$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 
-
+\begin{algorithm}
+\caption{zvolená fitness}
+\begin{algorithmic}[1]  % [1] způsobí, že číslujeme kroky algoritmu
+\Function{Fitness}{$\alpha$}
+    \State $h \gets \sum_{i=1}^n \alpha[i] \cdot h_i$
+    \State $c \gets \sum_{i=1}^n \alpha[i] \cdot c_i$
+    \If{$h > H$}
+        \State Vrátíme $0$
+    \EndIf
+    \State Vrátíme $c$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
