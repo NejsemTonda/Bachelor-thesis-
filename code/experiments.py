@@ -11,6 +11,7 @@ import random
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt 
+from tqdm import tqdm
 
 
 def run_experiemt(exp, name=None, title=None, save=False):
@@ -21,10 +22,10 @@ def run_experiemt(exp, name=None, title=None, save=False):
     if title is None:
         title = name
 
-    RUNS = 10
+    RUNS = 3
     data_runs = []
 
-    for _ in range(RUNS):
+    for _ in tqdm(range(RUNS)):
         data_runs.append(exp())
 
     data = {"Evaluation": [], "Max": [], "Min": [], "Mean": []}
@@ -50,7 +51,6 @@ def run_experiemt(exp, name=None, title=None, save=False):
         plt.show()
 
 def knapsack():
-
     with open("data/knapsack.txt", "r") as file:
         knapsack = eval(file.read())
 
@@ -61,13 +61,14 @@ def knapsack():
         partial(cx.knapsack_cx),
         partial(mut.knapsack),
         partial(fits.knapsack_fit, knapsack=knapsack),
-        parallel=False
+        elit=0.01,
+        parallel=False,
     )
     
     res = []
-    for i in range(150):
+    for i in range(200):
         pop.generation()
-        res.append(((i+1)*200, pop.best.fitness))
+        res.append((pop.fitness_evaluation, pop.best.fitness))
     
     return res
 
@@ -95,15 +96,21 @@ def radians_simple():
     
     pop = Population(
         100,
-        partial(SimpleGenome.new, level, length=10),
+        partial(agents.SimpleGenome.new, level, length=10),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1),
         partial(mut.simple),
         fitness,
+        elit=0.05
     )
+
+    while True:
+        pop.generation()
+        fitness(pop.best, draw=True)
 
 
 if __name__ == "__main__":
-   random.seed(42)
-   np.random.seed(42)
-   run_experiemt(knapsack, "knap", "Knapsack Problem", save=True)
+   #random.seed(42)
+   #np.random.seed(42)
+   #run_experiemt(knapsack, "knap", "Knapsack Problem", save=False)
+   radians_simple()
