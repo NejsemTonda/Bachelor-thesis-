@@ -1,9 +1,8 @@
-import copy 
 from eva.agents import Type
 from Box2D.b2 import vec2
 import numpy as np
 
-
+SCALER = 4
 def knapsack_fit(agent, knapsack):
     items = knapsack[0]
     max_w = knapsack[1]
@@ -44,9 +43,6 @@ def simulate(level, draw=False):
     return min_d
 
 def simple_fitness(agent, level, draw=False):
-    if agent.fitness is not None and not draw:
-        return agent.fitness
-
     level = level()
     clicks = map(vec2, agent.genome.clicks)
     last_click = vec2(list(level.env.anchor_dic.keys())[0])
@@ -56,11 +52,11 @@ def simple_fitness(agent, level, draw=False):
                 last_click = c
             elif t == Type.plank:
                 added = level.env.add_plank(last_click, c)
-                last_click = added.end
+                last_click = added.end/SCALER
                 
             elif t == Type.road:
                 added = level.env.add_road(last_click, c)
-                last_click = added.end
+                last_click = added.end/SCALER
         except AssertionError:
             pass
 
@@ -69,14 +65,12 @@ def simple_fitness(agent, level, draw=False):
 
     return fitness
 
-def fitness_radians(agent, level, draw=False):
+def polar_fitness(agent, level, draw=False):
     def pol2cart(l, alpha):
         x = l * np.cos(alpha)
         y = l * np.sin(alpha)
         return(x, y)
 
-    if agent.fitness is not None and not draw:
-        return agent.fitness
 
     level = level()
     clicks = map(lambda x: vec2(pol2cart(x[0], x[1])), agent.genome.clicks) 
@@ -84,14 +78,93 @@ def fitness_radians(agent, level, draw=False):
     for c,t in zip(clicks, agent.genome.types):
         try:
             if t == Type.none:
-                last_click = c
+                last_click += c
             elif t == Type.plank:
-                added = level.env.add_plank(last_click, c)
-                last_click = added.end
+                added = level.env.add_plank(last_click, last_click+c)
+                last_click = added.end/SCALER
                 
             elif t == Type.road:
-                added = level.env.add_road(last_click, c)
-                last_click = added.end
+                added = level.env.add_road(last_click, last_click+c)
+                last_click = added.end/SCALER
+        except AssertionError:
+            pass
+
+    min_d = simulate(level, draw)
+    fitness = -min_d
+
+    return fitness
+
+def improved_fitness(agent, level, alpha=0.1, beta=0.01, draw=False):
+    def pol2cart(l, alpha):
+        x = l * np.cos(alpha)
+        y = l * np.sin(alpha)
+        return(x, y)
+
+
+    level = level()
+    fixed_anchors = list(level.env.anchor_dic.keys())[1:]
+    fixed_a_cum_dist = 0
+    clicks = map(lambda x: vec2(pol2cart(x[0], x[1])), agent.genome.clicks) 
+    last_click = vec2(list(level.env.anchor_dic.keys())[0])
+    for c,t in zip(clicks, agent.genome.types):
+        try:
+            if t == Type.none:
+                last_click += c
+            elif t == Type.plank:
+                added = level.env.add_plank(last_click, last_click+c)
+                last_click = added.end/SCALER
+                for a in fixed_anchors:
+                    if last_click == a:
+                        fixed_anchors.remove(a)
+                    else:
+                        fixed_a_cum_dist += (vec2(a) - vec2(last_click)).length
+            elif t == Type.road:
+                added = level.env.add_road(last_click, last_click+c)
+                last_click = added.end/SCALER
+                for a in fixed_anchors:
+                    if last_click == a:
+                        fixed_anchors.remove(a)
+                    else:
+                        fixed_a_cum_dist+= (vec2(a) - vec2(last_click)).length
+
+        except AssertionError:
+            pass
+    min_d = simulate(level, draw)
+
+    new_anchor_discount = (len(level.env.anchor_dic) - len(fixed_anchors)) * (-alpha)
+    fixed_a_discount = fixed_a_cum_dist * (-beta)
+
+    fitness = -min_d + new_anchor_discount + fixed_a_discount
+    return fitness 
+
+def increasing_fitness(agent, level, hardness=0, draw=False):
+    def pol2cart(l, alpha):
+        x = l * np.cos(alpha)
+        y = l * np.sin(alpha)
+        return(x, y)
+
+    level = level()
+    e = vec2(0,0.1)
+    if hardness > 0:
+        left = vec2(list(level.env.anchor_dic.keys())[0])
+        right = vec2(list(level.env.anchor_dic.keys())[2])
+        to = right + (left-right)*hardness
+        to = vec2(list(map(int, to*4)))/4
+        level.env.add_ground([right+e, to+e],anchors=[to])
+
+    clicks = map(lambda x: vec2(pol2cart(x[0], x[1])), agent.genome.clicks) 
+    last_click = vec2(list(level.env.anchor_dic.keys())[0])
+    for c,t in zip(clicks, agent.genome.types):
+        try:
+            if t == Type.none:
+                last_click += c
+            elif t == Type.plank:
+                added = level.env.add_plank(last_click, last_click+c)
+                last_click = added.end/SCALER
+                
+            elif t == Type.road:
+                added = level.env.add_road(last_click, last_click+c)
+                last_click = added.end/SCALER
         except AssertionError:
             pass
 

@@ -13,17 +13,17 @@ class Population:
     selection: Callable[[Population], Population]
     crossover: Callable[[Population], Population]
     mutation: Callable[[Population], Population]
-    fitness: Callable[[Agent], float]
+    fitness_f: Callable[[Agent], float]
     best: Agent
     parallel: bool
 
-    def __init__(self, size, agent_init, selection, crossover, mutation, fitness, elit=0, parallel=True):
+    def __init__(self, size, agent_init, selection, crossover, mutation, fitness_f, elit=0, parallel=True):
         self.size = size
         self.agent_init = agent_init
         self.selection = selection
         self.crossover = crossover
         self.mutation = mutation
-        self.fitness = fitness
+        self.fitness_f = fitness_f
         self.parallel = parallel
         self.elit = elit
 
@@ -31,13 +31,13 @@ class Population:
 
         if self.parallel:
             with Pool(6) as p:
-                r = list(tqdm(p.imap(self.fitness, self.agents), total=len(self.agents)))
+                r = list(tqdm(p.imap(self.fitness_f, self.agents), total=len(self.agents)))
             
             for a,f in zip(self.agents,r):
                 a.fitness = f
         else:
             for a in tqdm(self.agents):
-                a.fitness = self.fitness(a)
+                a.fitness = self.fitness_f(a)
 
         self.fitness_evaluation = size
 
@@ -51,13 +51,13 @@ class Population:
 
         if self.parallel:
             with Pool(6) as p:
-                r = list(tqdm(p.imap(self.fitness, offspring), total=len(offspring)))
+                r = list(tqdm(p.imap(self.fitness_f, offspring), total=len(offspring)))
             
             for a,f in zip(offspring,r):
                 a.fitness = f
         else:
             for a in tqdm(offspring):
-                a.fitness = self.fitness(a)
+                a.fitness = self.fitness_f(a)
 
         self.fitness_evaluation += len(offspring)
 

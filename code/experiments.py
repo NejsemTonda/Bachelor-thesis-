@@ -3,6 +3,7 @@ import eva.mutations as mut
 import eva.fitness as fits
 import eva.selections as sel
 import eva.agents as agents
+from eva.agents import Agent, Type
 from eva.population import Population
 from levels import LevelFactory
 from functools import partial
@@ -87,30 +88,100 @@ def simple():
 
     while True:
         pop.generation()
+        print(pop.best)
         print(fitness(pop.best, draw=True))
 
 
 def radians_simple():
     level = LevelFactory.level1()
-    fitness = partial(fits.simple_fitness, level=LevelFactory.level1)
+    fitness = partial(fits.polar_fitness, level=LevelFactory.level1)
     
     pop = Population(
         100,
-        partial(agents.SimpleGenome.new, level, length=10),
+        partial(agents.PolarGenome.new, level, length=20),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1),
-        partial(mut.simple),
+        partial(mut.polar),
         fitness,
-        elit=0.05
+        elit=0.00
+    )
+    
+    fitness(pop.best, draw=True)
+
+    for i in range(200):
+        pop.generation()
+        if True: print(fitness(pop.best, draw=True))
+
+def improved_radians():
+    level = LevelFactory.level1()
+    fitness = partial(fits.improved_fitness, level=LevelFactory.level1)
+    
+    pop = Population(
+        1000,
+        partial(agents.PolarGenome.new, level, length=20),
+        partial(sel.tournament_selection),
+        partial(cx.n_point, n=1),
+        partial(mut.polar),
+        fitness,
+        elit=0.05,
+        parallel = True
+    )
+    fitness(pop.best, draw=True)
+
+    for _ in range(200):
+        pop.generation()
+        print(len(pop.best.genome.clicks))
+        if True: print(fitness(pop.best, draw=True))
+
+
+def increasing_hardness():
+    level = LevelFactory.level1()
+    hardness = 0.9
+    fitness = partial(fits.increasing_fitness, hardness=hardness, level=LevelFactory.level1)
+    
+    pop = Population(
+        100,
+        partial(agents.PolarGenome.new, level, length=20),
+        partial(sel.tournament_selection),
+        partial(cx.n_point, n=1),
+        partial(mut.polar),
+        fitness,
+        elit=0.00,
+        parallel = True
     )
 
-    while True:
+    for _ in range(200):
         pop.generation()
-        fitness(pop.best, draw=True)
+        overall_fits = [a.fitness for a in pop.agents]
+        if True: print(fitness(pop.best, draw=True)) 
+        print(sum(overall_fits)/len(overall_fits))
+        if sum(overall_fits)/len(overall_fits) > -5:
+            hardness += -0.05
+            fitness = partial(fits.increasing_fitness, hardness=hardness, level=LevelFactory.level1)
+            pop.fitness_f = fitness 
+            print("hardness increased")
+
+
+
 
 
 if __name__ == "__main__":
-   #random.seed(42)
-   #np.random.seed(42)
-   #run_experiemt(knapsack, "knap", "Knapsack Problem", save=False)
-   radians_simple()
+    #random.seed(42)
+    #np.random.seed(42)
+    #run_experiemt(knapsack, "knap", "Knapsack Problem", save=False)
+    #knapsack()
+    #radians_simple()
+    #simple()
+    #improved_radians()
+    increasing_hardness()
+
+    #level = LevelFactory.level1()
+    #fitness = partial(fits.improved_fitness, level=LevelFactory.level1)
+    #a = Agent(agents.PolarGenome.new(level, length=20))
+    #print(a)
+    #print(fitness(a, draw=True))
+    
+    
+
+    quit()
+    simple()

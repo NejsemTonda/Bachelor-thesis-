@@ -52,9 +52,6 @@ env.add_plank(b2Vec2(7.25,6.25), b2Vec2(9,6.25))
 
 
 env.init_graphics()
-for i in range(1000):    
-    env.draw()
-    env.step()
 
 ui = UI(env)
 

@@ -3,15 +3,15 @@ import math
 
 class VecDict(dict):
     def __getitem__(self, key):
-        h = (key.x, key.y)
+        h = (key[0], key[1])
         return super().__getitem__(h) 
 
     def __setitem__(self, key, value):
-        h = (key.x, key.y)
+        h = (key[0], key[1])
         super().__setitem__(h, value)
 
     def __contains__(self, key):
-        h = (key.x, key.y)
+        h = (key[0], key[1])
         return super().__contains__(h)
 
 SCALER = 4

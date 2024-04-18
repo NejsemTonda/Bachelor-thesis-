@@ -1,12 +1,57 @@
 \chapter{Implementace}
 
+Co je těžké na udělání kopie hry (stejná fyzika)
+
+Už se o to někdo pokoušel (video z youtube asi?)
+
+zmíňka o publikací, kde se staví mosty pomocí EA ale ne mosty do polybridge
+
+
 \section{Fyzikální engine}
 
+Krátký odstaveček o tom, jak jsem použil Box2D (citace Box2D). Co to je a proč jsem si to vybral
+
 \section{Aproximace hře Poly Bridge}
+
+Jak jsem udělal to že se věci v mojí simulaci chovají stejně jako ve hře.
+Jaké data jsem dostal ze hry. 
+
 \subsection{Testy}
 
+Jaké testy jsem udělal, abych věděl jako moc se hře podobám. 
+
+\Subsection{Úrovně}
+
+Jak jsem úrovně z polybridge udělal ve svojí simulaci. Možná obrázky z polybridge a z mojí simulace
+
 \section{Aplikace evolučních algoritmů}
+
+Jak jsem udělal EA
 \subsection{Jednoduchý návrh}
+
+Ukázaka
+
+Několik důvodů, proč si myslím, že to vůbec nevyšlo a jak je plánuju opravit
+
 \subsection{Polární kódování}
+Předchozí experiment dělal jenom dlouhé příčky, takhle budu moc udělat i krátkou. Pomůže to vůbec?
+
+\subsection{Vylepšená fitness funkce}
+
+Fitness nám nedává moc informací o tom, jak je most dobrý. Přidali jsem několik další komponentů do fitness (proč by se to mělo zlepšit? citace knížka)
+
+\subsection{Měnící se fitness}
+
+Zlepším se tím, že udělám problém jednodušší. Postupně budu stěžovat dokud nezkonverguju
+
+\subsection{Křížení}
+
+Dává v mém kódování křížení smysl? Má moc velký vliv na celou strukturu
+
 \subsection{Grafové kódování}
-\subsection{Plně spojené kódování}
+
+Změním kódování aby dávalo smysl. Mutace a Křížení pak budou reálně k něčemu a nebudu si to kazit
+
+\subsection{Lepší inicializace}
+
+Udělám stejnou init jako v jiném článku (citace mosty). Bude mít pak křízení smysl? exp

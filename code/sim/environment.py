@@ -3,7 +3,7 @@ from Box2D import b2
 from .helpers import VecDict, correctLen
 from .components import Plank, Road, Car, Ground, Anchor
 
-
+SCALER = 4
 class Environment:
     def __init__(self, steps=60, max_plank_len=2.05, max_road_len=2.05,buildable_weight=1.783,buildable_limit=875):
         self.graphics = None
@@ -27,6 +27,7 @@ class Environment:
 
 
     def add_plank(self, start, end):
+        start = vec2(list(map(int,start*SCALER)))/SCALER
         end = correctLen(start, end, self.max_plank_len)
         plank = Plank(self.world, start, end, self.plank_limit, self.plank_weight)
         self.planks.append(plank)
@@ -36,6 +37,7 @@ class Environment:
 
 
     def add_road(self, start, end):
+        start = vec2(list(map(int,start*SCALER)))/SCALER
         end = correctLen(start, end, self.max_road_len)
         road = Road(self.world, start, end, self.road_limit, self.road_weight)
         self.roads.append(road)
@@ -60,6 +62,8 @@ class Environment:
 
 
     def add_ground(self, shape, anchors=[]):
+        shape = list(map(vec2,shape))
+        anchors = list(map(vec2,anchors))
         g = Ground(self.world, shape)
         self.grounds.append(g)
         for pos in anchors:
