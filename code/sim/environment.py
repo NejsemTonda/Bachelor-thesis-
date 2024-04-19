@@ -28,7 +28,9 @@ class Environment:
 
     def add_plank(self, start, end):
         start = vec2(list(map(int,start*SCALER)))/SCALER
+        end1 = end
         end = correctLen(start, end, self.max_plank_len)
+        if end1 != end: print("edge was too long", end1, end)
         plank = Plank(self.world, start, end, self.plank_limit, self.plank_weight)
         self.planks.append(plank)
 
@@ -38,7 +40,9 @@ class Environment:
 
     def add_road(self, start, end):
         start = vec2(list(map(int,start*SCALER)))/SCALER
+        end1 = end
         end = correctLen(start, end, self.max_road_len)
+        if end1 != end: print("edge was too long", end1, end)
         road = Road(self.world, start, end, self.road_limit, self.road_weight)
         self.roads.append(road)
 

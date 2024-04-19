@@ -38,6 +38,8 @@ def polar(agents, click_p=0.1, angle_max=np.pi/12,len_max=0.5, type_p=0.05, type
 
     return agents
 
+def graph(agents):
+    return agents
 
 
 

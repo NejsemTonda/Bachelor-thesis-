@@ -1,6 +1,7 @@
 from eva.agents import Type
 from Box2D.b2 import vec2
 import numpy as np
+from eva.helpers import pol2cart
 
 SCALER = 4
 def knapsack_fit(agent, knapsack):
@@ -66,12 +67,6 @@ def simple_fitness(agent, level, draw=False):
     return fitness
 
 def polar_fitness(agent, level, draw=False):
-    def pol2cart(l, alpha):
-        x = l * np.cos(alpha)
-        y = l * np.sin(alpha)
-        return(x, y)
-
-
     level = level()
     clicks = map(lambda x: vec2(pol2cart(x[0], x[1])), agent.genome.clicks) 
     last_click = vec2(list(level.env.anchor_dic.keys())[0])
@@ -95,12 +90,6 @@ def polar_fitness(agent, level, draw=False):
     return fitness
 
 def improved_fitness(agent, level, alpha=0.1, beta=0.01, draw=False):
-    def pol2cart(l, alpha):
-        x = l * np.cos(alpha)
-        y = l * np.sin(alpha)
-        return(x, y)
-
-
     level = level()
     fixed_anchors = list(level.env.anchor_dic.keys())[1:]
     fixed_a_cum_dist = 0
@@ -138,11 +127,6 @@ def improved_fitness(agent, level, alpha=0.1, beta=0.01, draw=False):
     return fitness 
 
 def increasing_fitness(agent, level, hardness=0, draw=False):
-    def pol2cart(l, alpha):
-        x = l * np.cos(alpha)
-        y = l * np.sin(alpha)
-        return(x, y)
-
     level = level()
     e = vec2(0,0.1)
     if hardness > 0:
@@ -172,5 +156,22 @@ def increasing_fitness(agent, level, hardness=0, draw=False):
     fitness = -min_d
 
     return fitness
+
+def graph_fitness(agent, level, draw=False):
+    level = level()
+    for e in agent.genome.edges:
+        if e.type == Type.plank:
+            level.env.add_plank(vec2(e[0].pos), vec2(e[1].pos))
+
+        elif e.type == Type.road:
+            level.env.add_road(vec2(e[0].pos), vec2(e[1].pos))
+
+        else:
+            pass
+
+    min_d = simulate(level, draw)
+    fitness = -min_d
+    return fitness
+
 
 

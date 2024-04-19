@@ -2,7 +2,7 @@ import random
 from eva.agents import Agent, SimpleGenome, KnapsackGenome
 
 
-def vector_xover(a, b, points=None):
+def vector_cx(a, b, points=None):
     assert len(a) == len(b), f"length of a != length of b {len(a)} != {len(b)}"
     if points is None:
         return a,b
@@ -26,7 +26,7 @@ def knapsack_cx(agents):
 
         point = random.randint(0, len(agents[0].genome))
 
-        child1, child2 = vector_xover(parent1, parent2, point) 
+        child1, child2 = vector_cx(parent1, parent2, point) 
 
         offspring.append(Agent(KnapsackGenome(child1)))
         offspring.append(Agent(KnapsackGenome(child2)))
@@ -43,17 +43,20 @@ def n_point(agents, n=1):
 
         points = [random.randint(0, len(agents[0].genome.types)) for _ in range(n)]
 
-        child1_clicks, child2_clicks = vector_xover(parent1.clicks, parent2.clicks, points) 
-        child1_types, child2_types = vector_xover(parent1.types, parent2.types, points)
+        child1_clicks, child2_clicks = vector_cx(parent1.clicks, parent2.clicks, points) 
+        child1_types, child2_types = vector_cx(parent1.types, parent2.types, points)
 
         offspring.append(Agent(SimpleGenome(child1_clicks, child1_types)))
         offspring.append(Agent(SimpleGenome(child2_clicks, child2_types)))
     return offspring
 
+def graph_cx(agents):
+    return agents
+
 if __name__ == "__main__":
     a = [1,2,3,4,5]
     b = ['a', 'b', 'c', 'd', 'e']
-    print(vector_xover(a, b, points=2))
-    print(vector_xover(a, b, points=[2]))
-    print(vector_xover(a, b, points=[2,4]))
-    print(vector_xover(a, b, points=[1,2,4]))
+    print(vector_cx(a, b, points=2))
+    print(vector_cx(a, b, points=[2]))
+    print(vector_cx(a, b, points=[2,4]))
+    print(vector_cx(a, b, points=[1,2,4]))

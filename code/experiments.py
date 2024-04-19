@@ -14,6 +14,11 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from tqdm import tqdm
 
+def pol2cart(l, alpha):
+        x = l * np.cos(alpha)
+        y = l * np.sin(alpha)
+        return(x, y)
+from Box2D.b2 import vec2
 
 def run_experiemt(exp, name=None, title=None, save=False):
     if name is None:
@@ -162,25 +167,42 @@ def increasing_hardness():
             print("hardness increased")
 
 
-
+def graph_genome():
+    level = LevelFactory.level1()
+    fitness = partial(fits.graph_fitness, level=LevelFactory.level1)
+   
+    while True:
+        pop = Population(
+            1000,
+            partial(agents.GraphGenome.new, level),
+            partial(sel.tournament_selection),
+            partial(cx.graph_cx, n=1),
+            partial(mut.graph),
+            fitness,
+            elit=0.00,
+            parallel = True
+        )
+        
+        fitness(pop.best, draw=True)
 
 
 if __name__ == "__main__":
     #random.seed(42)
     #np.random.seed(42)
+    level = LevelFactory.level1()
     #run_experiemt(knapsack, "knap", "Knapsack Problem", save=False)
     #knapsack()
     #radians_simple()
     #simple()
     #improved_radians()
-    increasing_hardness()
+    #increasing_hardness()
 
-    #level = LevelFactory.level1()
     #fitness = partial(fits.improved_fitness, level=LevelFactory.level1)
     #a = Agent(agents.PolarGenome.new(level, length=20))
     #print(a)
     #print(fitness(a, draw=True))
-    
+
+    graph_genome()
     
 
     quit()
