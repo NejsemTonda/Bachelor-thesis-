@@ -1,57 +1,167 @@
 \chapter{Implementace}
 
-Co je těžké na udělání kopie hry (stejná fyzika)
+\xxx{Co je těžké na udělání kopie hry (stejná fyzika)}
 
-Už se o to někdo pokoušel (video z youtube asi?)
+\xxx{Už se o to někdo pokoušel (video z youtube asi?)}
 
-zmíňka o publikací, kde se staví mosty pomocí EA ale ne mosty do polybridge
+\xxx{zmíňka o publikací, kde se staví mosty pomocí EA ale ne mosty do polybridge}
 
 
 \section{Fyzikální engine}
 
-Krátký odstaveček o tom, jak jsem použil Box2D (citace Box2D). Co to je a proč jsem si to vybral
+Jako fyzikální engine pro simulaci jsme zvolili Box2D (citace Box2D). Box2D je open-source fyzikální engine, který poskytuje simulaci pohybu objektů ve 2D prostoru. Je často využíván ve vývoji počítačových her ale také simulací a umožňuje snadné zpracování kolizí, gravitace, tuhosti objektů a dalších fyzikálních jevů. Tento engine byl původně implementován v jazyce C++, avšak díky dostupným knihovnám jej můžeme používat Pythonu, což zvyšuje jeho rychlost a umožňuje nám iterovat přes rozsáhlé množství simulací.
 
 \section{Aproximace hře Poly Bridge}
 
-Jak jsem udělal to že se věci v mojí simulaci chovají stejně jako ve hře.
-Jaké data jsem dostal ze hry. 
+V naší simulaci jsme implementovali různé aspekty hry pomocí následujících komponent knihovny Box2D:
+
+\begin{itemize}
+    \item \textbf{Materiály}: Ty jsou modelovány jako dynamické objekty, pro které používáme `Box2D.b2DynamicBody`.
+    \item \textbf{Klouby}: Pro spojení různých materiálů jsme využili `Box2D.b2RevoluteJoint`.
+    \item \textbf{Zátež na prvky}: Abychom zjistili síly působící na jednotlivé elementy v simulaci, používáme metodu `b2body.GetReactionForce()`, která vrací reakční sílu vzniklou v důsledku interakcí těles.
+\end{itemize}
 
 \subsection{Testy}
 
-Jaké testy jsem udělal, abych věděl jako moc se hře podobám. 
+Abychom v naší simulaci co nejvěrněji napodobyli chování fyzikálních prvků jako ve hře polybridge, zavedli jsme šest různorodých testů. Tyto testy zkoumají aspekty fyzikální simulace, jako jsou odolnost materiálů v proměnlivých podmínkách, hmotnost materiálů a interakci sil mezi objekty.
 
-\Subsection{Úrovně}
+Zvolené testy jsou následující:
 
-Jak jsem úrovně z polybridge udělal ve svojí simulaci. Možná obrázky z polybridge a z mojí simulace
+\begin{itemize}
+    \item \textbf{Dvě vozovky mezi dvěma pevnými body} Testujeme, zda konstrukce praskne pod zatížením, což by mělo být očekávaným výsledkem.
+    \item \textbf{Šest dřevěných dílů mezi dvěma pevnými body} Očekáváme, že konstrukce vydrží bez prasknutí.
+    \item \textbf{Sedm dřevěných dílů mezi dvěma pevnými body} V tomto testu očekáváme, že konstrukce pod tíhou praskne.
+    \item \textbf{Symetrický obrazec z 13.66 metrů vozovky, zavěšený na jednom kusu vozovky} Testujeme, zda vozovka unese zatížení bez prasknutí.
+    \item \textbf{Symetrický obrazec z 14.66 metrů vozovky, zavěšený na jednom kusu vozovky} V tomto případě testujeme, zda konstrukce nevydrží zatížení a praskne.
+    \item \textbf{Komplexní most z vozovek a dřeva, po kterém přejede auto} Cílem tohoto testu je prozkoumat interakci sil mezi různými materiály, kdy očekáváme, že most vydrží přejetí auta.
+\end{itemize}
+
+Vizualizaci testů můžeme vidět na obrázku 2 a 3
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/poly_tests.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/sim_tests.png}
+    \end{minipage}
+    \caption{Vizualizace testů ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \label{fig:1}
+\end{figure}
+
+
+\xxx{simulace má 4 různé hyperparametry parametry, udělali jsme random search abychom splniny co nejvíce testů a aby simulace byla co nejstabilnější}
+
+\subsection{Úrovně}
+
+\xxx{Jak jsem úrovně z polybridge udělal ve svojí simulaci. Možná obrázky z polybridge a z mojí simulace}
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/poly_lvl1.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/impl_lvl1.png}
+    \end{minipage}
+    \caption{Vizualizace první úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \label{fig:2}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/poly_lvl2.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/impl_lvl2.png}
+    \end{minipage}
+    \caption{Vizualizace druhé úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \label{fig:3}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/poly_lvl3.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/impl_lvl3.png}
+    \end{minipage}
+    \caption{Vizualizace třetí úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \label{fig:4}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/poly_lvl4.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/impl_lvl4.png}
+    \end{minipage}
+    \caption{Vizualizace čtvrté úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \label{fig:5}
+\end{figure}
+
 
 \section{Aplikace evolučních algoritmů}
 
-Jak jsem udělal EA
+\xxx{Jak jsem udělal EA}
+
+\xxx{můžů/mám sem dávat kousky kódu, z pythoní implementace? to by bylo asi nejednodušší}
+
 \subsection{Jednoduchý návrh}
 
-Ukázaka
+\xxx{reprezentace je vektor dvojic čísel, každá dvojce říká, kde bude další kliknutí myši}
+\xxx{turnajová selekce, jednoboidové křížení, mutace náhodně změní číslo +/- 1}
 
-Několik důvodů, proč si myslím, že to vůbec nevyšlo a jak je plánuju opravit
+\xxx{Několik důvodů, proč si myslím, že to vůbec nevyšlo a jak je plánuju opravit}
+
+Jak můžeme vidět v experimentu (odkaz experiment) algortimu se nedaří stavit příliš kvalitní mosty. Domníváme se, že by to mohlo být z následujících důvodů.
+
+\begin{itemize}
+    \item Z pricipu reprezentace jedince je nepravděpodobné, aby vznikaly krátké hrany, které mohou být klíčové pro kaviltní řešení.
+    \item Malá mutace na začátku genu může mít velký vliva na celkouvou strukturu mostu.
+    \item Krížení v naší reprezentaci nedává smysl.
+    \item Fitness funkce nevrací dobrou zpětnou vzdbu o kvalitě jedince \xxx{obrázek s porvnáním?}
+\end{itemize}
 
 \subsection{Polární kódování}
-Předchozí experiment dělal jenom dlouhé příčky, takhle budu moc udělat i krátkou. Pomůže to vůbec?
+
+\xxx{reprezentace podobně jako v přechozím případě, ale dvojce čísel jsou délka nově přidaného materiálu a ůhel}
+\xxx{jinak stejně jako u předchozího případu}
 
 \subsection{Vylepšená fitness funkce}
 
-Fitness nám nedává moc informací o tom, jak je most dobrý. Přidali jsem několik další komponentů do fitness (proč by se to mělo zlepšit? citace knížka)
+\xxx{Fitness nám nedává moc informací o tom, jak je most dobrý. Přidali jsem několik další komponentů do fitness (proč by se to mělo zlepšit? citace knížka)}
+
+\begin{itemize}
+    \item Penalizace za umisťování materiálů, který se nespojí s další materíálem. Lépe propojený most by měl mít lepší stabilitu
+    \item Penalizace za všechny kotvy, které jedinece nepoužil v podobě vzdálenosti každého kliknutí ke všem nepoužitým kotvám. Most který používá více kotev by měl být stabilnější
+    \item Penalizace za předčasně ukončenou simulaci. Simulace se předčasně ukončí pokud auto spadne, nebo pokud se dlouho nepohybuje
+\end{itemize}
 
 \subsection{Měnící se fitness}
 
-Zlepším se tím, že udělám problém jednodušší. Postupně budu stěžovat dokud nezkonverguju
-
-\subsection{Křížení}
-
-Dává v mém kódování křížení smysl? Má moc velký vliv na celou strukturu
+\xxx{Udělám problém jednodušší. Dám břehy blíž k sobě, jakmile bude průměrná fitness dostatečně nízko, břehy oddálím}
 
 \subsection{Grafové kódování}
 
-Změním kódování aby dávalo smysl. Mutace a Křížení pak budou reálně k něčemu a nebudu si to kazit
+\xxx{Grafové kódování. Ukládám zvlášť vrcholy a hrany mostu}
+\xxx{Popsané jak budou pak vypadat mutace a křížení}
 
 \subsection{Lepší inicializace}
 
-Udělám stejnou init jako v jiném článku (citace mosty). Bude mít pak křízení smysl? exp
+\xxx{Udělám stejnou init jako v článku (citace mosty)}

@@ -2,6 +2,7 @@ import random
 from Box2D.b2 import vec2
 from enum import Enum
 import numpy as np
+from eva.helpers import get_possible_points
 
 
 
@@ -68,19 +69,11 @@ class GraphGenome:
             self.pos = pos
             self.edges = []
 
-    class Edge:
-        def __init__(self, v1, v2, t):
-            self.nodes = [v1,v2]
-            self.type = t
-
-        def __getitem__(self, key):
-            return self.nodes[key] 
-
     def __init__(self, nodes, edges):
         self.nodes = nodes
         self.edges = edges
 
-    def new(level, node_count=20, edge_count=20):
+    def new(level, node_count=20):
         nodes = [GraphGenome.Node(pos) for pos in level.env.anchor_dic.keys()]
         edges = []
         while len(nodes) < node_count:
@@ -102,7 +95,7 @@ class GraphGenome:
             nodes.append(n2)
             n.edges.append(n2)
             n2.edges.append(n)
-            edges.append(GraphGenome.Edge(n, n2, random.choice([Type.plank, Type.road, Type.none])))
+            edges.append((n, n2, random.choice([Type.plank, Type.road])))
         
         for _ in range(node_count*2):
             n1 = random.choice(nodes)
@@ -112,11 +105,64 @@ class GraphGenome:
                 continue
             n1.edges.append(n2)
             n2.edges.append(n1)
-            edges.append(GraphGenome.Edge(n1, n2, random.choice([Type.plank, Type.road, Type.none])))
-
+            edges.append((n1, n2, random.choice([Type.plank, Type.road])))
+        
         return GraphGenome(nodes, edges) 
-                
-          
+
+    def better_init(level):
+        def make_line(nodes, edges, start_n, end_n, t):
+            last = start_n
+            direction = vec2(end_n.pos)-vec2(start_n.pos)
+            direction = direction / direction.length
+            while True:
+                if (vec2(last.pos)-vec2(end_n.pos)).length < 1.5:
+                    break
+                l = random.randint(4, 8)/4
+                new_pos = vec2(last.pos)+l*direction
+                new_pos = vec2(list(map(int,vec2(new_pos)*4)))/4
+                if (vec2(last.pos)-new_pos).length > 2.05:
+                    continue
+                new_node = GraphGenome.Node(tuple(new_pos))
+                nodes.append(new_node)
+                new_node.edges.append(last)
+                last.edges.append(new_node)
+                edges.append((last, new_node, t))
+                last = new_node
+
+            if (vec2(last.pos) - vec2(end_n.pos)).length > 0.1:
+                last.edges.append(end_n)
+                end_n.edges.append(last)
+                edges.append((last, end_n, t))
+
+        edges = []
+        nodes = [GraphGenome.Node(pos) for pos in level.env.anchor_dic.keys()]
+        level_anchors = len(nodes)
+        left = nodes[level.left_side]
+        right = nodes[level.right_side]
+        fixed = list(filter(lambda x: x not in [left,right], nodes))
+            
+        # Create road
+        make_line(nodes, edges, left, right, Type.road)
+
+        # Create supporst from fixed anchors
+        for node in fixed:
+            target = random.choice(nodes[level_anchors:])
+            make_line(nodes, edges, node, target, Type.plank)
+        
+        # reinforce
+        for n1, n2 in zip(nodes, nodes[1:]):
+            possible = get_possible_points([n1.pos, n2.pos]) 
+            if len(possible) == 0:
+                continue
+            new_node = GraphGenome.Node(random.choice(possible))
+            for node in nodes:
+                l = (vec2(node.pos)-vec2(new_node.pos)).length
+                if l > 0.1 and l < level.env.max_plank_len:
+                    new_node.edges.append(node) 
+                    node.edges.append(new_node) 
+                    edges.append((node, new_node, Type.plank))
+        return GraphGenome(nodes, edges)
+                  
 
 if __name__ == "__main__":
     #g = KnapsackGenome.new(10)

@@ -28,7 +28,6 @@ def simulate(level, draw=False):
         level.env.step()
         if draw:
             level.env.draw()
-        
         car = level.car.chassis
         if car.position.y < -10:
             break
@@ -40,7 +39,7 @@ def simulate(level, draw=False):
             static = 0
 
         min_d = min(min_d, (car.position - level.goal).length)
-
+    min_d = round(min_d, ndigits=1)
     return min_d
 
 def simple_fitness(agent, level, draw=False):
@@ -128,7 +127,7 @@ def improved_fitness(agent, level, alpha=0.1, beta=0.01, draw=False):
 
 def increasing_fitness(agent, level, hardness=0, draw=False):
     level = level()
-    e = vec2(0,0.1)
+    e = vec2(0,0.05)
     if hardness > 0:
         left = vec2(list(level.env.anchor_dic.keys())[0])
         right = vec2(list(level.env.anchor_dic.keys())[2])
@@ -160,18 +159,41 @@ def increasing_fitness(agent, level, hardness=0, draw=False):
 def graph_fitness(agent, level, draw=False):
     level = level()
     for e in agent.genome.edges:
-        if e.type == Type.plank:
+        if e[2] == Type.plank:
             level.env.add_plank(vec2(e[0].pos), vec2(e[1].pos))
 
-        elif e.type == Type.road:
+        elif e[2] == Type.road:
             level.env.add_road(vec2(e[0].pos), vec2(e[1].pos))
+        else:
+            pass
 
+    min_d = simulate(level, draw)
+    fitness = (-min_d, -level.env.cost)
+    return fitness
+
+
+def graph_increasing(agent, level, hardness=0, draw=False):
+    level = level()
+    e = vec2(0,0.05)
+    if hardness > 0:
+        left = vec2(list(level.env.anchor_dic.keys())[0])
+        right = vec2(list(level.env.anchor_dic.keys())[2])
+        to = right + (left-right)*hardness
+        to = vec2(list(map(int, to*4)))/4
+        level.env.add_ground([right+e, to+e],anchors=[to])
+
+
+    for e in agent.genome.edges:
+        if e[2] == Type.plank:
+            level.env.add_plank(vec2(e[0].pos), vec2(e[1].pos))
+
+        elif e[2] == Type.road:
+            level.env.add_road(vec2(e[0].pos), vec2(e[1].pos))
         else:
             pass
 
     min_d = simulate(level, draw)
     fitness = -min_d
     return fitness
-
 
 

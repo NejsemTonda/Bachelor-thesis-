@@ -4,6 +4,7 @@ from typing import Callable
 from tqdm import tqdm
 import random
 from multiprocessing import Pool
+import copy
 
 
 
@@ -26,40 +27,39 @@ class Population:
         self.fitness_f = fitness_f
         self.parallel = parallel
         self.elit = elit
+        self.f_evaluations = 0
 
         self.agents = [Agent(agent_init()) for _ in range(self.size)]
 
-        if self.parallel:
-            with Pool(6) as p:
-                r = list(tqdm(p.imap(self.fitness_f, self.agents), total=len(self.agents)))
-            
-            for a,f in zip(self.agents,r):
-                a.fitness = f
-        else:
-            for a in tqdm(self.agents):
-                a.fitness = self.fitness_f(a)
-
-        self.fitness_evaluation = size
-
+        self._eval_fitness(self.agents)
+        
         self.agents = sorted(self.agents, reverse=True)
         self.best = self.agents[0]
 
+    def update_fitness(self, new_f):
+        self.fitness_f = new_f
+        self._eval_fitness(self.agents)
+
+    def _eval_fitness(self, agents):
+        if self.parallel:
+            with Pool(6) as p:
+                r = list(tqdm(p.imap(self.fitness_f, agents), total=len(agents)))
+            
+            for a,f in zip(agents,r):
+                a.fitness = f
+        else:
+            for a in tqdm(agents):
+                a.fitness = self.fitness_f(a)
+
+        self.f_evaluations += len(agents)
+
     def generation(self):
-        offspring = self.selection(self.agents)
+        offspring = copy.deepcopy(self.agents)
+        offspring = self.selection(offspring)
         offspring = self.crossover(offspring)
         offspring = self.mutation(offspring)
 
-        if self.parallel:
-            with Pool(6) as p:
-                r = list(tqdm(p.imap(self.fitness_f, offspring), total=len(offspring)))
-            
-            for a,f in zip(offspring,r):
-                a.fitness = f
-        else:
-            for a in tqdm(offspring):
-                a.fitness = self.fitness_f(a)
-
-        self.fitness_evaluation += len(offspring)
+        self._eval_fitness(offspring)
 
         self.agents = offspring + self.agents[:int(len(self.agents) * self.elit)]
         self.agents = sorted(self.agents, reverse=True)[:self.size]

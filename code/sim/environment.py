@@ -5,13 +5,22 @@ from .components import Plank, Road, Car, Ground, Anchor
 
 SCALER = 4
 class Environment:
-    def __init__(self, steps=60, max_plank_len=2.05, max_road_len=2.05,buildable_weight=1.783,buildable_limit=875):
+    def __init__(self,
+            steps=60, #physical simulation steps per iterations
+            max_plank_len=2.05,
+            max_road_len=None,
+            buildable_weight=1.3475121952552491, #buildable b2.density, found by rs
+            buildable_limit=765, #limit fo b2.reaction force, found by rs
+            road_weight_multiplier = 3.99204226720507, #how many times is road denser then plank, found by rs
+            road_limit_multiplier = 0.8214835226562238, #how many times is road stronger then plank, found by rs
+        ):
+        if max_road_len is None: max_road_len = max_plank_len 
         self.graphics = None
         self.steps = steps
         self.grounds = []
         self.planks = []
         self.roads = []
-        self.car = None
+        self.cars = []
 
         self.anchor_dic = VecDict()
         self.joint_tuple = []
@@ -21,16 +30,23 @@ class Environment:
         self.max_plank_len = max_plank_len
         self.max_road_len = max_road_len
         self.plank_weight = buildable_weight
-        self.road_weight = 6.4*self.plank_weight
+        self.road_weight = road_weight_multiplier*self.plank_weight
         self.plank_limit = buildable_limit
-        self.road_limit = self.plank_limit * 9/8
+        self.road_limit = self.plank_limit * road_limit_multiplier
+
+        self.plank_pm_cost = 180
+        self.road_pm_cost = 200
+
+        self.cost = 0
 
 
     def add_plank(self, start, end):
-        start = vec2(list(map(int,start*SCALER)))/SCALER
+        start = vec2(list(map(int,vec2(start)*SCALER)))/SCALER
+        end = vec2(list(map(int,vec2(end)*SCALER)))/SCALER
         end1 = end
         end = correctLen(start, end, self.max_plank_len)
-        if end1 != end: print("edge was too long", end1, end)
+        #if end1 != end: print("edge was too long")
+        self.cost += self.plank_pm_cost*(start-end).length
         plank = Plank(self.world, start, end, self.plank_limit, self.plank_weight)
         self.planks.append(plank)
 
@@ -39,10 +55,12 @@ class Environment:
 
 
     def add_road(self, start, end):
-        start = vec2(list(map(int,start*SCALER)))/SCALER
+        start = vec2(list(map(int,vec2(start)*SCALER)))/SCALER
+        end = vec2(list(map(int,vec2(end)*SCALER)))/SCALER
         end1 = end
         end = correctLen(start, end, self.max_road_len)
-        if end1 != end: print("edge was too long", end1, end)
+        #if end1 != end: print("edge was too long")
+        self.cost += self.road_pm_cost*(start-end).length
         road = Road(self.world, start, end, self.road_limit, self.road_weight)
         self.roads.append(road)
 
@@ -83,7 +101,7 @@ class Environment:
 
     def add_car(self, pos, **kwargs):
         c = Car(self.world, pos, **kwargs) 
-        self.car = c
+        self.cars.append(c)
         return c
 
     def step(self):
@@ -95,15 +113,15 @@ class Environment:
 
         for e in self.planks+self.roads:
             e.update(self)
-
-        if self.car is not None:
-            self.car.update(self)
+        
+        for c in self.cars:
+            c.update(self)
 
         self.world.Step(1.0/self.steps, 6, 2)
 
     def init_graphics(self):
         from .graphics import Graphics
-        self.graphics = Graphics()
+        self.graphics = Graphics(fps=180)
 
     def draw(self):
         if self.graphics == None:
@@ -112,8 +130,7 @@ class Environment:
         for e in self.grounds+self.planks+self.roads+list(self.anchor_dic.values()):
             e.draw(self.graphics)
 
-        if self.car is not None:
-            self.car.draw(self.graphics)
-
+        for c in self.cars:
+            c.draw(self.graphics)
 
         self.graphics.draw()

@@ -50,7 +50,7 @@ def n_point(agents, n=1):
         offspring.append(Agent(SimpleGenome(child2_clicks, child2_types)))
     return offspring
 
-def graph_cx(agents):
+def graph_cx(agents, n=1):
     return agents
 
 if __name__ == "__main__":
