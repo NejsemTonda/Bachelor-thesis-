@@ -1,6 +1,6 @@
 \chapter{Implementace}
 
-\xxx{Co je těžké na udělání kopie hry (stejná fyzika)}
+V této části bakalářské práce se zaměříme na praktickou implementaci evolučních algoritmů. Kromě toho je nutné ale i implementovat fyzikální prostředí, podobné tomu jako je ve hře polybridge. V první řadě se zaměříme aby se naše simulace co nejvěrněji podobala hře, což umožní použít řešení navrhnuté evolučními algoritmy i ve hře. 
 
 \xxx{Už se o to někdo pokoušel (video z youtube asi?)}
 
@@ -23,7 +23,7 @@ V naší simulaci jsme implementovali různé aspekty hry pomocí následující
 
 \subsection{Testy}
 
-Abychom v naší simulaci co nejvěrněji napodobyli chování fyzikálních prvků jako ve hře polybridge, zavedli jsme šest různorodých testů. Tyto testy zkoumají aspekty fyzikální simulace, jako jsou odolnost materiálů v proměnlivých podmínkách, hmotnost materiálů a interakci sil mezi objekty.
+Abychom v naší simulaci co nejvěrněji napodobili chování fyzikálních prvků jako ve hře polybridge, zavedli jsme šest různorodých testů. Tyto testy zkoumají aspekty fyzikální simulace, jako jsou odolnost materiálů v proměnlivých podmínkách, hmotnost materiálů a interakci sil mezi objekty.
 
 Zvolené testy jsou následující:
 
@@ -53,11 +53,15 @@ Vizualizaci testů můžeme vidět na obrázku 2 a 3
 \end{figure}
 
 
-\xxx{simulace má 4 různé hyperparametry parametry, udělali jsme random search abychom splniny co nejvíce testů a aby simulace byla co nejstabilnější}
+\xxx{simulace má 4 různé hyperparametry parametry, udělali jsme random search abychom splnili co nejvíce testů a aby simulace byla co nejstabilnější}
+
+\xxx{}
+
+\xxx{podařilo se nám splnit jenom 5 testů z 6. může být problém v hře}
 
 \subsection{Úrovně}
 
-\xxx{Jak jsem úrovně z polybridge udělal ve svojí simulaci. Možná obrázky z polybridge a z mojí simulace}
+Jako testovací prostředí pro evoluční agloritmus jsme zvolili první 4 úrovně z původní hry. Více úrovní jsem kvůli jejich komplexitě nezahrnuli.
 
 \begin{figure}[ht]
     \centering
@@ -69,7 +73,7 @@ Vizualizaci testů můžeme vidět na obrázku 2 a 3
         \centering
         \includegraphics[width=\linewidth]{img/impl_lvl1.png}
     \end{minipage}
-    \caption{Vizualizace první úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \caption{Vizualizace první úrovně ve hře polybridge (vlevo) a v simulaci (vpravo)}
     \label{fig:2}
 \end{figure}
 
@@ -83,7 +87,7 @@ Vizualizaci testů můžeme vidět na obrázku 2 a 3
         \centering
         \includegraphics[width=\linewidth]{img/impl_lvl2.png}
     \end{minipage}
-    \caption{Vizualizace druhé úrovně ve hře polybridge (nalevo) a v simulaci (vpravo)}
+    \caption{Vizualizace druhé úrovně ve hře polybridge (vlevo) a v simulaci (vpravo)}
     \label{fig:3}
 \end{figure}
 
@@ -120,42 +124,43 @@ Vizualizaci testů můžeme vidět na obrázku 2 a 3
 
 \xxx{Jak jsem udělal EA}
 
-\xxx{můžů/mám sem dávat kousky kódu, z pythoní implementace? to by bylo asi nejednodušší}
+\xxx{můžů/mám sem dávat kousky kódu, z pythoní implementace? To by bylo možná snazší, než se to snažit popsat slovy}
 
 \subsection{Jednoduchý návrh}
 
 \xxx{reprezentace je vektor dvojic čísel, každá dvojce říká, kde bude další kliknutí myši}
-\xxx{turnajová selekce, jednoboidové křížení, mutace náhodně změní číslo +/- 1}
+\xxx{turnajová selekce, jednobodové křížení, mutace náhodně změní číslo +/- 1}
 
 \xxx{Několik důvodů, proč si myslím, že to vůbec nevyšlo a jak je plánuju opravit}
 
-Jak můžeme vidět v experimentu (odkaz experiment) algortimu se nedaří stavit příliš kvalitní mosty. Domníváme se, že by to mohlo být z následujících důvodů.
+Jak můžeme vidět v experimentu (odkaz experiment), algortimu se nedaří stavět příliš kvalitní mosty. Domníváme se, že by tomu tak je z následujících důvodů.
 
 \begin{itemize}
-    \item Z pricipu reprezentace jedince je nepravděpodobné, aby vznikaly krátké hrany, které mohou být klíčové pro kaviltní řešení.
-    \item Malá mutace na začátku genu může mít velký vliva na celkouvou strukturu mostu.
-    \item Krížení v naší reprezentaci nedává smysl.
-    \item Fitness funkce nevrací dobrou zpětnou vzdbu o kvalitě jedince \xxx{obrázek s porvnáním?}
+    \item Z principu reprezentace jedince je nepravděpodobné, aby vznikaly krátké hrany, které mohou být klíčové pro kvalitní řešení.
+    \item I malá mutace na začátku genu může mít velký vliv na celkovou strukturu mostu.
+    \item Křížení v naší reprezentaci nedává smysl.
+    \item Fitness funkce nevrací dobrou zpětnou vazbu o kvalitě jedince \xxx{obrázek s porvnáním?}
 \end{itemize}
 
 \subsection{Polární kódování}
 
-\xxx{reprezentace podobně jako v přechozím případě, ale dvojce čísel jsou délka nově přidaného materiálu a ůhel}
+\xxx{reprezentace podobně jako v přechozím případě, ale dvojice čísel jsou délka nově přidaného materiálu a úhel}
 \xxx{jinak stejně jako u předchozího případu}
 
 \subsection{Vylepšená fitness funkce}
 
 \xxx{Fitness nám nedává moc informací o tom, jak je most dobrý. Přidali jsem několik další komponentů do fitness (proč by se to mělo zlepšit? citace knížka)}
+\xxx{Dal bych sem pár obrázků, které ukazují mosty, které jsou evidentně dobré ale mají stejnou fitness jako mosty, které jsou evidentně špatné}
 
 \begin{itemize}
     \item Penalizace za umisťování materiálů, který se nespojí s další materíálem. Lépe propojený most by měl mít lepší stabilitu
-    \item Penalizace za všechny kotvy, které jedinece nepoužil v podobě vzdálenosti každého kliknutí ke všem nepoužitým kotvám. Most který používá více kotev by měl být stabilnější
+    \item Penalizace za všechny kotvy, které jedince nepoužil v podobě vzdálenosti každého kliknutí ke všem nepoužitým kotvám. Most který používá více kotev by měl být stabilnější
     \item Penalizace za předčasně ukončenou simulaci. Simulace se předčasně ukončí pokud auto spadne, nebo pokud se dlouho nepohybuje
 \end{itemize}
 
 \subsection{Měnící se fitness}
 
-\xxx{Udělám problém jednodušší. Dám břehy blíž k sobě, jakmile bude průměrná fitness dostatečně nízko, břehy oddálím}
+\xxx{Udělám problém jednodušší. Dám břehy blíž k sobě, jakmile bude průměrná fitness dostatečně nízko, břehy trochu oddálím}
 
 \subsection{Grafové kódování}
 
