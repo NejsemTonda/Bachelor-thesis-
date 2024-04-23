@@ -71,7 +71,7 @@ V této části bychom chtěli ukázat, jak lze navrhnout evoluční algoritmus 
 
 Problém batohu je generalizace mnoha industriálních problémů (citace knížka). Představme si, že se balíme třeba na několikadenní túru do hor a s sebou bychom si chtěli zabalit batůžek. Chtěli bychom s sebou mít co nejužitečnější věci, ale zároveň si nemůžeme vzít všechno, protože bychom to neunesli. Problém batohu spočívá v tom, jak si vybrat věci, které si s sebou zabalíme, tak abychom maximalizovali užitek a zároveň se vešli do našeho stanoveného limitu.
 
-Formálněji se tento problém definuje následovně. Je dána množina $n$ předmětů s hmotnostmi $h_1, \dots, h_n \in \N$, cenami $c_1, \dots, c_n \in \N$ a maximální hmotnost $H \in N$. Hledáme takovou podmnožinu $p \subseteq \{1, \dots n\}$, pro kterou platí, že $\sum_{i \in P} h_i \leq H$ a zároveň $\sum_{i \in P} c_i$ je co největší.
+Formálněji se tento problém definuje následovně. Je dána množina $n$ předmětů s hmotnostmi $h_1, \dots, h_n \in \N$, cenami $c_1, \dots, c_n \in \N$ a maximální hmotnost $H \in \N$. Hledáme takovou podmnožinu $p \subseteq \{1, \dots n\}$, pro kterou platí, že $\sum_{i \in P} h_i \leq H$ a zároveň $\sum_{i \in P} c_i$ je co největší.
 
 Jako ilustrační řešení tomuto problému jsme navrhli tyto evoluční operátory a reprezentace:
 \begin{itemize}

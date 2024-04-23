@@ -16,9 +16,9 @@ Jako fyzikální engine pro simulaci jsme zvolili Box2D (citace Box2D). Box2D je
 V naší simulaci jsme implementovali různé aspekty hry pomocí následujících komponent knihovny Box2D:
 
 \begin{itemize}
-    \item \textbf{Materiály}: Ty jsou modelovány jako dynamické objekty, pro které používáme `Box2D.b2DynamicBody`.
-    \item \textbf{Klouby}: Pro spojení různých materiálů jsme využili `Box2D.b2RevoluteJoint`.
-    \item \textbf{Zátež na prvky}: Abychom zjistili síly působící na jednotlivé elementy v simulaci, používáme metodu `b2body.GetReactionForce()`, která vrací reakční sílu vzniklou v důsledku interakcí těles.
+    \item \textbf{Materiály}: Ty jsou modelovány jako dynamické objekty, pro které používáme \texttt{Box2D.b2DynamicBody}.
+    \item \textbf{Klouby}: Pro spojení různých materiálů jsme využili \texttt{Box2D.b2RevoluteJoint}.
+    \item \textbf{Zátež na prvky}: Abychom zjistili síly působící na jednotlivé elementy v simulaci, používáme metodu \texttt{b2body.GetReactionForce()}, která vrací reakční sílu vzniklou v důsledku interakcí těles.
 \end{itemize}
 
 \subsection{Testy}
