@@ -61,7 +61,7 @@ def simple_fitness(agent, level, draw=False):
             pass
 
     min_d = simulate(level, draw)
-    fitness = -min_d
+    fitness = (-min_d, -level.env.cost)
 
     return fitness
 
@@ -84,7 +84,7 @@ def polar_fitness(agent, level, draw=False):
             pass
 
     min_d = simulate(level, draw)
-    fitness = -min_d
+    fitness = (-min_d, -level.env.cost)
 
     return fitness
 
@@ -122,7 +122,7 @@ def improved_fitness(agent, level, alpha=0.1, beta=0.01, draw=False):
     new_anchor_discount = (len(level.env.anchor_dic) - len(fixed_anchors)) * (-alpha)
     fixed_a_discount = fixed_a_cum_dist * (-beta)
 
-    fitness = -min_d + new_anchor_discount + fixed_a_discount
+    fitness = (-min_d + new_anchor_discount + fixed_a_discount, -level.env.cost)
     return fitness 
 
 def increasing_fitness(agent, level, hardness=0, draw=False):
@@ -152,7 +152,7 @@ def increasing_fitness(agent, level, hardness=0, draw=False):
             pass
 
     min_d = simulate(level, draw)
-    fitness = -min_d
+    fitness = (-min_d, -level.env.cost)
 
     return fitness
 
@@ -193,7 +193,7 @@ def graph_increasing(agent, level, hardness=0, draw=False):
             pass
 
     min_d = simulate(level, draw)
-    fitness = -min_d
+    fitness = (-min_d, -level.env.cost)
     return fitness
 
 

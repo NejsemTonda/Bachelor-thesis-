@@ -121,7 +121,7 @@ class Environment:
 
     def init_graphics(self):
         from .graphics import Graphics
-        self.graphics = Graphics(fps=180)
+        self.graphics = Graphics(fps=120)
 
     def draw(self):
         if self.graphics == None:

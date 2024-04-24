@@ -17,50 +17,64 @@ import copy
 from Box2D.b2 import vec2
 
 def run_experiemt(exp, name=None, title=None, save=False):
+    def process_data(data_runs):
+        data = {"Evaluation": [], "Max": [], "Min": [], "Mean": []}
+        for i in range(len(data_runs[0])):  # Assuming all runs have the same length
+            max_fitness_values = [run[i][1] for run in data_runs]
+            data["Evaluation"].append(data_runs[0][i][0])
+            data["Max"].append(max(max_fitness_values))
+            data["Min"].append(min(max_fitness_values))
+            data["Mean"].append(sum(max_fitness_values) / len(max_fitness_values))
+        return pd.DataFrame(data)
+    
+    def plot_data(df, title, subplot):
+        sns.lineplot(data=df, x="Evaluation", y="Mean", label="Mean", ax=subplot)
+        subplot.fill_between(df["Evaluation"], df["Min"], df["Max"], alpha=0.2, label="Min-Max Range")
+        subplot.legend()
+        subplot.set_title(title)
+        subplot.set_xlabel("Number of Fitness Evaluations")
+        subplot.set_ylabel("Fitness")
+
+
     random.seed(42)
     np.random.seed(42)
 
     if name is None:
         save = False
         name = "Unnamed"
-    print(f"running experiment {name}")
     if title is None:
         title = name
 
-    RUNS = 1
+    print(f"running experiment {name}")
+    RUNS = 3
     data_runs = []
 
     for _ in tqdm(range(RUNS)):
         data_runs.append(exp())
 
-    data = {"Evaluation": [], "Max": [], "Min": [], "Mean": []}
-    for i in range(len(data_runs[0])):  # Assuming all runs have the same length
-       max_fitness_values = [run[i][1] for run in data_runs]
-       data["Evaluation"].append(data_runs[0][i][0])
-       data["Max"].append(max(max_fitness_values))
-       data["Min"].append(min(max_fitness_values))
-       data["Mean"].append(sum(max_fitness_values) / len(max_fitness_values))
+    __import__('IPython').embed();quit() 
     
-    df = pd.DataFrame(data)
     
-    # Plotting
-    sns.lineplot(data=df, x="Evaluation", y="Mean", label="Mean")
-    plt.fill_between(df["Evaluation"], df["Min"], df["Max"], alpha=0.2, label="Min-Max Range")
-    plt.legend()
-    plt.title(title)
-    plt.xlabel("Number of Fitness Evaluations")
-    plt.ylabel("Fitness")
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+    plot_data(df1, title1, ax1)
+    plot_data(df2, title2, ax2)
+
+    plt.tight_layout()
+
     if save:
         plt.savefig("data/pictures/"+name+".pdf")
     else:
         plt.show()
+    plt.cla()
 
 def knapsack():
     with open("data/knapsack.txt", "r") as file:
         knapsack = eval(file.read())
 
     pop = Population(
-        100,
+        1000,
         partial(agents.KnapsackGenome.new, k_len=len(knapsack[0])),
         partial(sel.tournament_selection),
         partial(cx.knapsack_cx),
@@ -70,7 +84,7 @@ def knapsack():
     )
     
     res = []
-    for i in range(20):
+    for i in range(200):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
     
@@ -149,7 +163,6 @@ def elit():
         fitness,
         elit=0.05
     )
-    fitness(pop.best, draw=True)
 
     res = []
     for _ in range(20):
@@ -301,8 +314,9 @@ def better_init():
 
 if __name__ == "__main__":
     #run_experiemt(knapsack, "knap", "Knapsack Problem", save=True)
-    #run_experiemt(simple, "simple", "Simple Agent Reprezetation", save=True)
+    run_experiemt(simple, "simple", "Simple Agent Reprezetation", save=True)
     #run_experiemt(polar_simple, "polar", "Agent with polar reprezentation", save=True)
     #run_experiemt(improved_polar, "impolar", "Improved fitness", save=True)
     #run_experiemt(elit, "elit", "Evolution with elitism", save=True)
     #run_experiemt(increasing_hardness, "inc", "Increasing Hardness", save=True)
+    #graph_genome()

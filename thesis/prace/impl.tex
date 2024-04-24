@@ -1,6 +1,6 @@
 \chapter{Implementace}
 
-V této části bakalářské práce se zaměříme na praktickou implementaci evolučních algoritmů. Kromě toho je nutné ale i implementovat fyzikální prostředí, podobné tomu jako je ve hře polybridge. V první řadě se zaměříme aby se naše simulace co nejvěrněji podobala hře, což umožní použít řešení navrhnuté evolučními algoritmy i ve hře. 
+V této části bakalářské práce se zaměříme na praktickou implementaci evolučních algoritmů. Kromě toho je nutné ale i implementovat fyzikální prostředí, podobné tomu jako je ve hře polybridge. V první řadě se zaměříme aby se naše simulace co nejvěrněji podobala hře, což umožní použít řešení navrhnuté evolučními algoritmy i ve hře. Nasledně navrhneme několik různých podob evolučních algoritmů pro stavbu mostu a ty mezi sebou porovnáme.
 
 \xxx{Už se o to někdo pokoušel (video z youtube asi?)}
 
@@ -55,7 +55,6 @@ Vizualizaci testů můžeme vidět na obrázku 2 a 3
 
 \xxx{simulace má 4 různé hyperparametry parametry, udělali jsme random search abychom splnili co nejvíce testů a aby simulace byla co nejstabilnější}
 
-\xxx{}
 
 \xxx{podařilo se nám splnit jenom 5 testů z 6. může být problém v hře}
 
@@ -126,12 +125,17 @@ Jako testovací prostředí pro evoluční agloritmus jsme zvolili první 4 úro
 
 \xxx{můžů/mám sem dávat kousky kódu, z pythoní implementace? To by bylo možná snazší, než se to snažit popsat slovy}
 
+Ve všech případech se snažíme optimalizovat dvě hodnoty a to jak daleko naše vozidlo dojelo a cenu mostu. V rámci algoritmu se tedy primárně snažíme maximalozovat $-dist = -||v - g||_2$ kde $v \in \R^2$ je pozice vozidla a $g \in \R^2$ je bod na druhé straně řeky a sekundárně $-cost$ kde $cost \in \N$ je cena mostu.
+
+Naše fintess funcke $f$ bude tedu vždy udávaná dvojicí čísel $f(g) = (-dist, -cost)$ kde $g$ je gen mostu.
+
 \subsection{Jednoduchý návrh}
 
-\xxx{reprezentace je vektor dvojic čísel, každá dvojce říká, kde bude další kliknutí myši}
-\xxx{turnajová selekce, jednobodové křížení, mutace náhodně změní číslo +/- 1}
+Nejednušší návrh danému problému by mohl vypadat následovně. Reprezentace genu je vektor dvojic čísel $c \in \{([0, \dots, x_{max}] \times [0, \dots, y_{max}])\}^n$ kde $x_{max} \in \N$ a $y_{max} in \N$ je šířka a výška úrovně a vektor $t \in T^n$ kde $T$ je množina materiálů, které můžeme pužít (dřevo, vozovka, nic). Vektor $c$ představuje, serii kliknutí myši na obrazovku a $t$ jaký typ materiálu přidáme.
 
-\xxx{Několik důvodů, proč si myslím, že to vůbec nevyšlo a jak je plánuju opravit}
+Jake mutaci jsme zvolili náhodné posunutí pozice kliknutí od $\pm 1$ s pravděpodobností $\frac{1}{n}$ a náhodnout změnu metariálu s pravděpodobností $\frac{1}{n}$.
+
+Jako křížení jsme použili jednobodové křížení vektoru $c$  a $t$ podle stejně zvoleného náhodného bodu. Jako selekci jsme zvolili turnajovou selekci.
 
 Jak můžeme vidět v experimentu (odkaz experiment), algortimu se nedaří stavět příliš kvalitní mosty. Domníváme se, že by tomu tak je z následujících důvodů.
 
@@ -144,13 +148,30 @@ Jak můžeme vidět v experimentu (odkaz experiment), algortimu se nedaří stav
 
 \subsection{Polární kódování}
 
-\xxx{reprezentace podobně jako v přechozím případě, ale dvojice čísel jsou délka nově přidaného materiálu a úhel}
-\xxx{jinak stejně jako u předchozího případu}
+Kvůli tomu, jak jsme reprezentovali jedince v předchozím návrhu, je nepravděpodobné, že budou vznikat krátké hrany, které můžou být zásadní pro dobré řešení. To, že náhodně zvolíme blízko od od posledního kliknutí je méně pravděpodobné, než že zvolíme bod daleko. Proto jsme navrhli kódování genu, kde dvojce z vektoru $c$ představují délku a úhel přidaného materiálu $c \in \{([0, L_{max}] \times [0, 2 \pi])\}^n$ kde $L_{max}$ je maximální povolená délka materiálu. Vektor $t$ zůstává stejný jako v předchozím případě.
+
+Vísledek běhu takto navrženého evolučního algoritmu můžeme vidět v experimentu (odkaz exepriment)
 
 \subsection{Vylepšená fitness funkce}
 
-\xxx{Fitness nám nedává moc informací o tom, jak je most dobrý. Přidali jsem několik další komponentů do fitness (proč by se to mělo zlepšit? citace knížka)}
-\xxx{Dal bych sem pár obrázků, které ukazují mosty, které jsou evidentně dobré ale mají stejnou fitness jako mosty, které jsou evidentně špatné}
+Jedním z problémů, se kterým se náš současný návrh potýká je ten, že naše fitness funkce moc dobře nerozlišuje, jak je dané řešení kvalitní. Na obrázku (odkaz obrázek) můžeme vidět dva různé jednice, kteří mají stejnou fitness, a v kvalitě se značně liší.
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/almost_good_bridge.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/bad_bridge.png}
+    \end{minipage}
+    \caption{Dva mosty se stejnou fitness, ale rozdílných kvalit}
+    \label{fig:5}
+\end{figure}
+
+Navrhli jsem proto několik rúzných penalizací, které můžeme do fitness zapojit.
 
 \begin{itemize}
     \item Penalizace za umisťování materiálů, který se nespojí s další materíálem. Lépe propojený most by měl mít lepší stabilitu
@@ -158,9 +179,12 @@ Jak můžeme vidět v experimentu (odkaz experiment), algortimu se nedaří stav
     \item Penalizace za předčasně ukončenou simulaci. Simulace se předčasně ukončí pokud auto spadne, nebo pokud se dlouho nepohybuje
 \end{itemize}
 
+Fitness pak bude odpovídat $f(g) = (d_{min} + \alpha \cdot mat + \beta \cdot anch + \gamma \cdot term, cost)$, kde $\alpha, \beta, \gamma \in \R$ a $mat, anch, term$ jsou penalizace za nespojený materiál, nevyužité kontvy a předčasné ukončení.
+
 \subsection{Měnící se fitness}
 
-\xxx{Udělám problém jednodušší. Dám břehy blíž k sobě, jakmile bude průměrná fitness dostatečně nízko, břehy trochu oddálím}
+%Pro zlepšení zpětné vazby našeho systému se můzeme padsfsflnsdfkljasdfjsafdjlkdfsjkfdsajkdfsajk
+\xxx{Udělám problém jednodušší. Dám břehy blíž k sobě, jakmile bude průměrná fitness dostatečně nízko, břehy trochu oddálím odkaz na IGA}
 
 \subsection{Grafové kódování}
 
