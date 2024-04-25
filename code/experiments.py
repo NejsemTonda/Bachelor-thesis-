@@ -28,7 +28,7 @@ def run_experiemt(exp, name=None, title=None, save=False):
         return pd.DataFrame(data)
     
     def plot_data(df, title, subplot):
-        sns.lineplot(data=df, x="Evaluation", y="Mean", label="Mean", ax=subplot)
+        sns.lineplot(data=df, x="Evaluation", y="Mean", label="Average Best fitness", ax=subplot)
         subplot.fill_between(df["Evaluation"], df["Min"], df["Max"], alpha=0.2, label="Min-Max Range")
         subplot.legend()
         subplot.set_title(title)
@@ -52,19 +52,18 @@ def run_experiemt(exp, name=None, title=None, save=False):
     for _ in tqdm(range(RUNS)):
         data_runs.append(exp())
 
-    __import__('IPython').embed();quit() 
-    
-    
+    df1 = process_data([[(x[0], x[1][0]) for x in run] for run in data_runs])
+    df2 = process_data([[(x[0], x[1][1]) for x in run] for run in data_runs])
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
-    plot_data(df1, title1, ax1)
-    plot_data(df2, title2, ax2)
+    plot_data(df1, "Minimal Distance", ax1)
+    plot_data(df2, "Bridge Cost", ax2)
 
     plt.tight_layout()
 
     if save:
-        plt.savefig("data/pictures/"+name+".pdf")
+        plt.savefig(f"data/pictures/{name}.pdf")
     else:
         plt.show()
     plt.cla()
@@ -255,7 +254,7 @@ def graph_genome():
     res = []
     for _ in range(20):
         pop.generation()
-        res.append((pop.f_evaluations, pop.best.fitness[1]))
+        res.append((pop.f_evaluations, pop.best.fitness))
 
     return res
 
@@ -271,7 +270,6 @@ def graph_inc():
         partial(cx.graph_cx, n=1),
         partial(mut.graph),
         fitness,
-        parallel = True
     )
 
 
@@ -279,8 +277,7 @@ def graph_inc():
     for _ in range(20):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
-        overall_fits = [a.fitness for a in pop.agents]
-        fitness(pop.best, draw=True)
+        overall_fits = [a.fitness[0] for a in pop.agents]
         if sum(overall_fits)/len(overall_fits) > -5:
             hardness += -0.05
             fitness = partial(fits.graph_increasing, hardness=hardness, level=LevelFactory.level1)
@@ -301,22 +298,23 @@ def better_init():
         partial(mut.graph),
         fitness,
         elit=0.0,
-        parallel = True
     )
     
     res = []
     for _ in range(20):
         pop.generation()
-        res.append((pop.f_evaluations, pop.best.fitness[1]))
+        res.append((pop.f_evaluations, pop.best.fitness))
 
     return res
 
 
 if __name__ == "__main__":
     #run_experiemt(knapsack, "knap", "Knapsack Problem", save=True)
-    run_experiemt(simple, "simple", "Simple Agent Reprezetation", save=True)
+    #run_experiemt(simple, "simple", "Simple Agent Reprezetation", save=False)
     #run_experiemt(polar_simple, "polar", "Agent with polar reprezentation", save=True)
     #run_experiemt(improved_polar, "impolar", "Improved fitness", save=True)
     #run_experiemt(elit, "elit", "Evolution with elitism", save=True)
     #run_experiemt(increasing_hardness, "inc", "Increasing Hardness", save=True)
-    #graph_genome()
+    run_experiemt(graph_genome, "graph", "Graph Encodings", save=True)
+    run_experiemt(graph_inc, "graph_inc", "Graph Encodings+Increasing Hardness", save=True)
+    run_experiemt(better_init, "init", "Better initialization", save=True)
