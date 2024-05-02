@@ -16,7 +16,7 @@ from tqdm import tqdm
 import copy
 from Box2D.b2 import vec2
 
-def run_experiemt(exp, name=None, title=None, show=True, save=False, args_list=None):
+def run_experiemt(exp, name=None, title=None, save=False, args_list=None):
     def process_data(data_runs):
         data = {"Evaluation": [], "Fitness": [], "Run": []}
         for run_id, run in enumerate(data_runs):
@@ -34,6 +34,7 @@ def run_experiemt(exp, name=None, title=None, show=True, save=False, args_list=N
         name = "Unnamed"
     if title is None:
         title = name
+
 
     print(f"running experiment {name}")
     RUNS = 1
@@ -57,15 +58,24 @@ def run_experiemt(exp, name=None, title=None, show=True, save=False, args_list=N
         for _ in tqdm(range(RUNS)):
             data_runs.append(exp(**args))
 
+        label = ",".join([k+"="+str(v) for k,v in args.items()])
 
+        try:
+            import pickle
+            h = name+title+label
+            with open(str(h)+".pkl", "wb") as file:
+                pickle.dump(data_runs, file)
+        except:
+            pas
+
+        
         df1 = process_data([[(x[0], x[1][0]) for x in run] for run in data_runs])
         df2 = process_data([[(x[0], x[1][1]) for x in run] for run in data_runs])
         
 
-        leg = ",".join([k+"="+str(v) for k,v in args.items()])
 
-        sns.lineplot(df1, x="Evaluation", y="Fitness", label=leg, ax=ax1)
-        sns.lineplot(df2, x="Evaluation", y="Fitness", label=leg, ax=ax2)
+        sns.lineplot(df1, x="Evaluation", y="Fitness", label=label, ax=ax1)
+        sns.lineplot(df2, x="Evaluation", y="Fitness", label=label, ax=ax2)
 
     ax1.legend()
     ax2.legend()
@@ -314,13 +324,14 @@ def better_init(size=500, gens=200, l=25, omega=1):
     for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
+        print(fitness(pop.best, draw=False))
+        
 
     return res
 
 
 if __name__ == "__main__":
     #run_experiemt(knapsack, "knap", "Knapsack Problem", save=True)
-
     run_experiemt(simple, "simple", "Jenoduché kódování jedince", args_list=[
         {"size": 500, "gens": 200, "l":20}, 
     ], save=True)
