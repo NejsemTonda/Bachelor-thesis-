@@ -40,37 +40,47 @@ class Environment:
         self.cost = 0
 
 
-    def add_plank(self, start, end):
+    def add_plank(self, start: tuple[int, int], end: tuple[int, int]):
+        """
+        This function will create plank in environment. 
+        It is possible to use Box2D.b2.vec2 instead of tuples
+        Size is adjusted autoamtically.
+        Position is rounded to nearest quater as is in poly bridge.
+
+        return components.Plank
+        """
         start = vec2(list(map(int,vec2(start)*SCALER)))/SCALER
         end = vec2(list(map(int,vec2(end)*SCALER)))/SCALER
         end1 = end
         end = correctLen(start, end, self.max_plank_len)
-        #if end1 != end: print("edge was too long")
         self.cost += self.plank_pm_cost*(start-end).length
         plank = Plank(self.world, start, end, self.plank_limit, self.plank_weight)
         self.planks.append(plank)
 
-        self.create_joints(plank, start, end)
+        self._create_joints(plank, start, end)
         return plank
 
 
     def add_road(self, start, end):
+        """
+        Same as add_plank, but with road
+        returns components.Road
+        """
         start = vec2(list(map(int,vec2(start)*SCALER)))/SCALER
         end = vec2(list(map(int,vec2(end)*SCALER)))/SCALER
         end1 = end
         end = correctLen(start, end, self.max_road_len)
-        #if end1 != end: print("edge was too long")
         self.cost += self.road_pm_cost*(start-end).length
         road = Road(self.world, start, end, self.road_limit, self.road_weight)
         self.roads.append(road)
 
-        self.create_joints(road, start, end)
+        self._create_joints(road, start, end)
         return road
 
-    def create_joints(self, buildable, start, end):
+    def _create_joints(self, buildable, start, end):
         for pos in [start,end]:
             if not pos in self.anchor_dic:
-                self.anchor_dic[pos] = self.add_anchor(pos)   
+                self.anchor_dic[pos] = self._add_anchor(pos)   
             anchor = self.anchor_dic[pos]
 
             j = self.world.CreateRevoluteJoint(
@@ -83,23 +93,36 @@ class Environment:
 
 
 
-    def add_ground(self, shape, anchors=[]):
+    def add_ground(self, shape: list[tuple[int, int]], anchors: list[tuple[int, int]]=None):
+        """
+        Will add ground with shape of `shape` to environment.
+        you can specify anchors list to create imovable anchors
+
+        return components.Ground
+        """
+        if anchors=None:
+            anchors=[]
         shape = list(map(vec2,shape))
         anchors = list(map(vec2,anchors))
         g = Ground(self.world, shape)
         self.grounds.append(g)
         for pos in anchors:
-            a = self.add_anchor(pos)
+            a = self._add_anchor(pos)
             a.body = g.body
             self.anchor_dic[pos] = a
         return g
 
-    def add_anchor(self, pos):
+    def _add_anchor(self, pos):
         a = Anchor(self.world, pos)
         self.anchor_dic[pos] = a
         return a 
 
     def add_car(self, pos, **kwargs):
+        """
+        This will add car to environment on specified pos. This car will always go right.
+        I you want to make the car heavier, add density=... to kwargs
+        return components.Car
+        """
         c = Car(self.world, pos, **kwargs) 
         self.cars.append(c)
         return c
@@ -121,9 +144,12 @@ class Environment:
 
     def init_graphics(self):
         from .graphics import Graphics
-        self.graphics = Graphics(fps=120)
+        self.graphics = Graphics()
 
     def draw(self):
+        """
+        will draw environment. Pygame is used as backed
+        """
         if self.graphics == None:
             self.init_graphics()
 

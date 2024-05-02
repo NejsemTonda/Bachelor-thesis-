@@ -15,10 +15,13 @@ class Population:
     crossover: Callable[[Population], Population]
     mutation: Callable[[Population], Population]
     fitness_f: Callable[[Agent], float]
-    best: Agent
-    parallel: bool
+    best: Agent # best agent of current generation
+    parallel: bool # run in paraller, on 6 core default change if needed
 
     def __init__(self, size, agent_init, selection, crossover, mutation, fitness_f, elit=0, parallel=True):
+        """
+        see code/README for more info
+        """
         self.size = size
         self.agent_init = agent_init
         self.selection = selection
@@ -37,6 +40,9 @@ class Population:
         self.best = self.agents[0]
 
     def update_fitness(self, new_f):
+        """
+        if you wish to update fitness during run, use this function to recalculate fitness of all agents in pop.
+        """
         self.fitness_f = new_f
         self._eval_fitness(self.agents)
 
@@ -54,6 +60,9 @@ class Population:
         self.f_evaluations += len(agents)
 
     def generation(self):
+        """
+        Will apply all genetics operator to population
+        """
         offspring = copy.deepcopy(self.agents)
         offspring = self.selection(offspring)
         offspring = self.crossover(offspring)
