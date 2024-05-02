@@ -109,7 +109,7 @@ class GraphGenome:
         
         return GraphGenome(nodes, edges) 
 
-    def better_init(level, alpha=1):
+    def better_init(level, omega=1):
         def make_line(nodes, edges, start_n, end_n, t):
             last = start_n
             direction = vec2(end_n.pos)-vec2(start_n.pos)
@@ -157,7 +157,7 @@ class GraphGenome:
             new_node = GraphGenome.Node(random.choice(possible))
             for node in nodes:
                 l = (vec2(node.pos)-vec2(new_node.pos)).length
-                if l > 0.1 and l < level.env.max_plank_len and random.random() < alpha:
+                if l > 0.1 and l < level.env.max_plank_len and random.random() < omega:
                     new_node.edges.append(node) 
                     node.edges.append(new_node) 
                     edges.append((node, new_node, Type.plank))
