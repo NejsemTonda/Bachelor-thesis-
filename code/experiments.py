@@ -16,26 +16,16 @@ from tqdm import tqdm
 import copy
 from Box2D.b2 import vec2
 
-def run_experiemt(exp, name=None, title=None, save=False):
+def run_experiemt(exp, name=None, title=None, show=True, save=False, args_list=None):
     def process_data(data_runs):
-        data = {"Evaluation": [], "Max": [], "Min": [], "Mean": []}
-        for i in range(len(data_runs[0])):  # Assuming all runs have the same length
-            max_fitness_values = [run[i][1] for run in data_runs]
-            data["Evaluation"].append(data_runs[0][i][0])
-            data["Max"].append(max(max_fitness_values))
-            data["Min"].append(min(max_fitness_values))
-            data["Mean"].append(sum(max_fitness_values) / len(max_fitness_values))
+        data = {"Evaluation": [], "Fitness": [], "Run": []}
+        for run_id, run in enumerate(data_runs):
+            for i, r in enumerate(run):
+                data["Evaluation"].append(r[0])
+                data["Fitness"].append(r[1])
+                data["Run"].append(run_id)
         return pd.DataFrame(data)
     
-    def plot_data(df, title, subplot):
-        sns.lineplot(data=df, x="Evaluation", y="Mean", label="Average Best fitness", ax=subplot)
-        subplot.fill_between(df["Evaluation"], df["Min"], df["Max"], alpha=0.2, label="Min-Max Range")
-        subplot.legend()
-        subplot.set_title(title)
-        subplot.set_xlabel("Number of Fitness Evaluations")
-        subplot.set_ylabel("Fitness")
-
-
     random.seed(42)
     np.random.seed(42)
 
@@ -46,19 +36,39 @@ def run_experiemt(exp, name=None, title=None, save=False):
         title = name
 
     print(f"running experiment {name}")
-    RUNS = 3
+    RUNS = 1
     data_runs = []
 
-    for _ in tqdm(range(RUNS)):
-        data_runs.append(exp())
-
-    df1 = process_data([[(x[0], x[1][0]) for x in run] for run in data_runs])
-    df2 = process_data([[(x[0], x[1][1]) for x in run] for run in data_runs])
-    
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+    fig.suptitle(title)
 
-    plot_data(df1, "Minimal Distance", ax1)
-    plot_data(df2, "Bridge Cost", ax2)
+    ax1.set_title("Minimal Distance")
+    ax1.set_xlabel("Number of Fitness Evaluations")
+    ax1.set_ylabel("Fitness")
+
+    ax2.set_title("Bridge Cost")
+    ax2.set_xlabel("Number of Fitness Evaluations")
+    ax2.set_ylabel("Fitness")
+
+    if args_list == None:
+        args_list = [{}]
+
+    for args in args_list:
+        for _ in tqdm(range(RUNS)):
+            data_runs.append(exp(**args))
+
+
+        df1 = process_data([[(x[0], x[1][0]) for x in run] for run in data_runs])
+        df2 = process_data([[(x[0], x[1][1]) for x in run] for run in data_runs])
+        
+
+        leg = ",".join([k+"="+str(v) for k,v in args.items()])
+
+        sns.lineplot(df1, x="Evaluation", y="Fitness", label=leg, ax=ax1)
+        sns.lineplot(df2, x="Evaluation", y="Fitness", label=leg, ax=ax2)
+
+    ax1.legend()
+    ax2.legend()
 
     plt.tight_layout()
 
@@ -89,13 +99,13 @@ def knapsack():
     
     return res
 
-def simple():
+def simple(size=500, gens=200, l=25):
     level = LevelFactory.level1()
     fitness = partial(fits.simple_fitness, level=LevelFactory.level1)
     
     pop = Population(
-        50,
-        partial(agents.SimpleGenome.new, level, length=25),
+        size,
+        partial(agents.SimpleGenome.new, level, length=l),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1) ,
         partial(mut.simple),
@@ -103,19 +113,19 @@ def simple():
     )
 
     res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
 
     return res
 
-def polar_simple():
+def polar_simple(size=500, gens=200, l=25):
     level = LevelFactory.level1()
     fitness = partial(fits.polar_fitness, level=LevelFactory.level1)
     
     pop = Population(
-        50,
-        partial(agents.PolarGenome.new, level, length=25),
+        size,
+        partial(agents.PolarGenome.new, level, length=l),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1),
         partial(mut.polar),
@@ -123,48 +133,48 @@ def polar_simple():
     )
     
     res = []
-    for i in range(20):
+    for i in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
 
     return res
 
-def improved_polar():
+def improved_polar(size=500, gens=200, l=25, alpha=0.1, beta=0.1):
+    level = LevelFactory.level1()
+    fitness = partial(fits.improved_fitness, level=LevelFactory.level1, alpha=alpha, beta=beta)
+    
+    pop = Population(
+        size,
+        partial(agents.PolarGenome.new, level, length=l),
+        partial(sel.tournament_selection),
+        partial(cx.n_point, n=1),
+        partial(mut.polar),
+        fitness,
+    )
+
+    res = []
+    for _ in range(gens):
+        pop.generation()
+        res.append((pop.f_evaluations, pop.best.fitness))
+
+    return res
+
+def elit(size=500, gens=200, l=25, elit=0.05):
     level = LevelFactory.level1()
     fitness = partial(fits.improved_fitness, level=LevelFactory.level1)
     
     pop = Population(
-        50,
-        partial(agents.PolarGenome.new, level, length=25),
+        size,
+        partial(agents.PolarGenome.new, level, length=l),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1),
         partial(mut.polar),
         fitness,
+        elit=elit
     )
 
     res = []
-    for _ in range(20):
-        pop.generation()
-        res.append((pop.f_evaluations, pop.best.fitness))
-
-    return res
-
-def elit():
-    level = LevelFactory.level1()
-    fitness = partial(fits.improved_fitness, level=LevelFactory.level1)
-    
-    pop = Population(
-        50,
-        partial(agents.PolarGenome.new, level, length=20),
-        partial(sel.tournament_selection),
-        partial(cx.n_point, n=1),
-        partial(mut.polar),
-        fitness,
-        elit=0.05
-    )
-
-    res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
 
@@ -172,14 +182,14 @@ def elit():
 
 
 
-def increasing_hardness():
+def increasing_hardness(size=500, gens=200, l=25, avg=5, increase=0.05):
     level = LevelFactory.level1()
     hardness = 0.9
     fitness = partial(fits.increasing_fitness, hardness=hardness, level=LevelFactory.level1)
     
     pop = Population(
-        50,
-        partial(agents.PolarGenome.new, level, length=20),
+        size,
+        partial(agents.PolarGenome.new, level, length=l),
         partial(sel.tournament_selection),
         partial(cx.n_point, n=1),
         partial(mut.polar),
@@ -187,12 +197,12 @@ def increasing_hardness():
     )
 
     res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
-        overall_fits = [a.fitness for a in pop.agents]
-        if sum(overall_fits)/len(overall_fits) > -5:
-            hardness += -0.05
+        overall_fits = [a.fitness[0] for a in pop.agents]
+        if sum(overall_fits)/len(overall_fits) > -avg:
+            hardness += -increase
             fitness = partial(fits.increasing_fitness, hardness=hardness, level=LevelFactory.level1)
             pop.fitness_f = fitness 
             print("hardness increased")
@@ -237,71 +247,71 @@ def grap_mutations():
         fitness(a, draw=True)
     
 
-def graph_genome():
+def graph_genome(size=500, gens=200, nodes=25):
     level = LevelFactory.level1()
     fitness = partial(fits.graph_fitness, level=LevelFactory.level1)
    
     pop = Population(
-        50,
-        partial(agents.GraphGenome.new, level),
+        size,
+        partial(agents.GraphGenome.new, node_count=nodes, level=level),
         partial(sel.tournament_selection),
-        partial(cx.graph_cx, n=1),
+        partial(cx.graph_cx),
         partial(mut.graph),
         fitness,
-        parallel = True
+        elit=0.05
     )
 
     res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
 
     return res
 
-def graph_inc():
+def graph_inc(size=500, gens=200, l=25, avg=5, increase=0.05):
     level = LevelFactory.level1()
     hardness = 0.9
 
     fitness = partial(fits.graph_increasing, hardness=hardness, level=LevelFactory.level1)
     pop = Population(
-        50,
-        partial(agents.GraphGenome.new, level),
+        size,
+        partial(agents.GraphGenome.new, node_count=l, level=level),
         partial(sel.tournament_selection),
-        partial(cx.graph_cx, n=1),
+        partial(cx.graph_cx),
         partial(mut.graph),
         fitness,
     )
 
 
     res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
         overall_fits = [a.fitness[0] for a in pop.agents]
-        if sum(overall_fits)/len(overall_fits) > -5:
-            hardness += -0.05
+        if sum(overall_fits)/len(overall_fits) > -avg:
+            hardness += -increase
             fitness = partial(fits.graph_increasing, hardness=hardness, level=LevelFactory.level1)
             pop.update_fitness(fitness)
             print("hardness increased")
 
     return res
 
-def better_init():
+def better_init(size=500, gens=200, l=25, omega=1):
     level = LevelFactory.level1()
     fitness = partial(fits.graph_fitness, level=LevelFactory.level1)
    
     pop = Population(
-        50,
-        partial(agents.GraphGenome.better_init, level),
+        size,
+        partial(agents.GraphGenome.better_init, level, omega=omega),
         partial(sel.tournament_selection),
-        partial(cx.graph_cx, n=1),
+        partial(cx.graph_cx),
         partial(mut.graph),
         fitness,
-        elit=0.0,
+        elit=0.05
     )
     
     res = []
-    for _ in range(20):
+    for _ in range(gens):
         pop.generation()
         res.append((pop.f_evaluations, pop.best.fitness))
 
@@ -310,11 +320,61 @@ def better_init():
 
 if __name__ == "__main__":
     #run_experiemt(knapsack, "knap", "Knapsack Problem", save=True)
-    #run_experiemt(simple, "simple", "Simple Agent Reprezetation", save=False)
-    #run_experiemt(polar_simple, "polar", "Agent with polar reprezentation", save=True)
-    #run_experiemt(improved_polar, "impolar", "Improved fitness", save=True)
-    #run_experiemt(elit, "elit", "Evolution with elitism", save=True)
-    #run_experiemt(increasing_hardness, "inc", "Increasing Hardness", save=True)
-    run_experiemt(graph_genome, "graph", "Graph Encodings", save=True)
-    run_experiemt(graph_inc, "graph_inc", "Graph Encodings+Increasing Hardness", save=True)
-    run_experiemt(better_init, "init", "Better initialization", save=True)
+
+    run_experiemt(simple, "simple", "Jenoduché kódování jedince", args_list=[
+        {"size": 500, "gens": 200, "l":20}, 
+    ], save=True)
+    run_experiemt(polar_simple, "polar-len", "Agent s polární reprezetací, různé délky genu", args_list=[
+        {"l":10}, 
+        {"l":20}, 
+        {"l":50}, 
+    ], save=True)
+    run_experiemt(polar_simple, "polar-pop", "Agent s polárním kódováním, různé velikosti populace", args_list=[
+        {"size": 500, "gens": 200}, 
+        {"size": 1000, "gens": 100}, 
+        {"size": 100, "gens": 1000}, 
+    ], save=True)
+    run_experiemt(improved_polar, "impolar", "Vylepšená fitness", args_list=[
+        {"alpha": 0, "beta":0},
+        {"alpha": 0.1, "beta":0},
+        {"alpha": 0, "beta":0.1},
+        {"alpha": 0.1, "beta":1},
+        {"alpha": 1, "beta":0.1},
+        {"alpha": 1, "beta":1},
+    ], save=True)
+    run_experiemt(elit, "elit", "Evoluce s eliticismem", args_list=[
+        {"elit": 0},
+        {"elit": 0.05},
+        {"elit": 0.1},
+        {"elit": 0.5},
+        {"elit": 0.9},
+    ], save=True)
+
+    run_experiemt(increasing_hardness, "inc", "Měnící se fitness", args_list=[
+        {"avg": 5, "increase": 0.05},
+        {"avg": 0.5, "increase": 0.05},
+        {"avg": 10, "increase": 0.05},
+        {"avg": 5, "increase": 0.01},
+        {"avg": 5, "increase": 0.1},
+    ], save=True)
+
+    run_experiemt(graph_genome, "graph", "Agent s grafovým kódováním", args_list=[
+        {"nodes": 10},
+        {"nodes": 20},
+        {"nodes": 50},
+    ], save=True)
+
+    run_experiemt(graph_inc, "graph-inc", "Agent s grafovým kódováním a měnící se fitness", args_list=[
+        {"avg": 5, "increase": 0.05},
+        {"avg": 0.5, "increase": 0.05},
+        {"avg": 10, "increase": 0.05},
+        {"avg": 5, "increase": 0.01},
+        {"avg": 5, "increase": 0.1},
+
+    ], save=True)
+
+    run_experiemt(better_init, "init", "Vylepšená inicializace", args_list=[
+        {"omega": 1},
+        {"omega": 0.5},
+        {"omega": 0.1},
+    ], save=True)
