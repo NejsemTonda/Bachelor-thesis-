@@ -100,7 +100,7 @@ class Environment:
 
         return components.Ground
         """
-        if anchors=None:
+        if anchors == None:
             anchors=[]
         shape = list(map(vec2,shape))
         anchors = list(map(vec2,anchors))

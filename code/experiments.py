@@ -66,7 +66,7 @@ def run_experiemt(exp, name=None, title=None, save=False, args_list=None):
             with open(str(h)+".pkl", "wb") as file:
                 pickle.dump(data_runs, file)
         except:
-            pas
+            print("could not save", h)
 
         
         df1 = process_data([[(x[0], x[1][0]) for x in run] for run in data_runs])
