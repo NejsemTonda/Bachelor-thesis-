@@ -1,47 +1,56 @@
 \chapter{Evoluční Algoritmy}
 
-\xxx{Nějaké povídání o evolučních algoritmech.}
+Evoluční algoritmy jsou metaheuristická optimalizační metoda odvozená z teorie evoluce. Evoluční algoritmy využívá pricipy darwinovské evoluce - selekci, mutaci a křížení k optimalizaci řešení. Tyto algoritmy jsou efektivní napříč různými problémy, protože mají jen málo předpokladů o povaze problému. Výpočetní náročnost vyplývající z vyhodnocování fitness funkce však může bránit jejich použití, ačkoli jednodušší evoluční algoritmy mohou často řešit i složité problémy.
+
+Evoluční algoritmy mají v informatice kořeny od 40. let 20. století. První myšlenky o simulované evoluci předtavil Alan Turing v roce 1948 \cite{Turing1948}, prakticky se začaly používat v 60. letech 20. století. K tomuto oboru významně přispěli různí průkopníci z celého světa, včetně Johna Hollanda, nebo Johna Kozi. V průběhu let se tento obor vyvinul a je předmětem několika vědeckých časopisů nebo specializovaných konferencí, jako jsou GECCO nebo CEC. 
 
 \section{Zakládní definice}
-V této sekci bychom chtěli definovat některé užitečné pojmy, ukázat základní komponenty evolučních algorimtů a zároveň vysvětlit, jakou hrají roli při návrhu a běhu algoritmu.
+V této sekci bychom chtěli definovat některé užitečné pojmy, ukázat základní komponenty evolučních algoritmů a zároveň vysvětlit, jakou hrají roli při návrhu a běhu algoritmu.
 
-\subsection{Gen a Jedinec}
-Gen představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu evolučního algoritmu představoval, že každé řešení bude binárně kódováno (holland citace), ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme jakési stavební bloky daného řešení \citet{HeadlessChicken}.
+\subsection{Genom a Jedinec}
+\emph{Genom} představuje jedno řešení pro daný problém. Je důležité zvolit vhodné kódování tohoto řešení. Holland si ve svém původním návrhu evolučního algoritmu představoval, že každé řešení bude kódované binárně \cite{Holland1992}, ale později se ukázalo, že je možné dosáhnout lepších výsledků, když kódováním reprezentujeme jakési stavební bloky daného řešení \citet{Jones1995Crossover}.
 
-Jedincem pak myslíme zastoupení genu v populaci.
+\emph{Jedincem} pak myslíme zastoupení genomu v populaci.
 
 \subsection{Populace a Generace}
-Populace je seznam jedinců. Ze začátku běhu algoritmu populaci většinou naplníme jedinci s náhodnými geny a postupnou aplikací genetických operátorů v ní budeme vyvíjet lepší a lepší řešení. Generace představuje stav populace v konkrétním čase.
+\emph{Populace} je seznam jedinců. Ze začátku běhu algoritmu populaci většinou naplníme jedinci s náhodnými genomy a postupnou aplikací genetických operátorů v~ní budeme evolvovat lepší a lepší řešení. \emph{Generace} představuje stav populace v~konkrétním čase.
 
 \subsection{Genetické operátory}
-Genetické operátory jsou funkce, které můžeme aplikovat na celou populaci s cílem vybrat lepší jedince do další generace. Pomocí těchto operátorů můžeme vyvažovat exploraci a exploataci algoritmu a zároveň celou populaci směřovat k optimálnímu řešení (možná citace).
+\emph{Genetické operátory} jsou funkce, které můžeme aplikovat na jednoho a více jedinců nebo na celou populaci s cílem vybrat lepší jedince do další generace. Pomocí těchto operátorů můžeme vyvažovat exploraci a exploataci algoritmu a zároveň celou populaci směřovat k optimálnímu řešení \cite{EibenSmith2015}.
 
-V kontextu genetických operátorů budeme často mluvit o rodičích a potomcích. Rodiči myslíme ty jedince, které se v populaci nachází před aplikací genetických operátorů, potomky pak ty, které se nachazí po aplikaci, neboli v další generaci. 
+V kontextu genetických operátorů budeme často mluvit o rodičích a potomcích. Rodiči myslíme ty jedince, které se v populaci nachází před aplikací genetických operátorů, potomky pak ty, které se nachází po aplikaci, neboli v další generaci. 
 
 \subsection{Křížení}
-Křižení je genetický operátor, kterým ze dvou nebo více jedinců (rodičů) můžeme vytvořit nového jedince (potomka), který strukturou připomíná oba všechny svoje rodiče. Tento proces je inspirován biologickou reprodukcí, kde potomci zdědí vlastnosti obou rodičů, což může vést k vyšší genetické variabilitě v populaci. Je důležité, aby nový potomek nebyl pouze náhodnou kombinací částí genů svých rodičů, ale aby křížení opravdu dávalo z hlediska struktury smysl (headless chicken citace).
+\emph{Křižení} je genetický operátor, kterým ze dvou nebo více jedinců (rodičů) můžeme vytvořit nového jedince (potomka), který strukturou připomíná oba (všechny) svoje rodiče. Tento proces je inspirován biologickou reprodukcí, kde potomci zdědí vlastnosti obou rodičů, což může vést k vyšší genetické variabilitě v populaci. Je důležité, aby nový potomek nebyl pouze náhodnou kombinací částí genů svých rodičů, ale aby křížení opravdu dávalo z hlediska struktury řešení smysl \cite{Jones1995Crossover}.
 
 \subsection{Mutace}
-Mutace je genetický operátor, který může měnit náhodné části genu. Od křížení se liší hlavně tím, že je nezávislá na ostatních genech v populaci. Význam mutací spočívá v udržení genetické diverzity populace, což je zásadní pro průzkum širšího prostoru řešení a předcházení předčasné konvergenci k suboptimálním řešením.
+\emph{Mutace} je genetický operátor, který může měnit náhodné části genomu. Od křížení se liší hlavně tím, že je nezávislá na ostatních genomech v populaci. Význam mutací spočívá v udržení genetické diverzity populace, což je zásadní pro průzkum širšího prostoru řešení a předcházení předčasné konvergenci k suboptimálním řešením.
 
 \subsection{Fitness}
-Fitness je funkce, zde označená písmenem $f$, taková že $f: G \rightarrow \R$ kde $G$ představuje množinu všech možných genů. V problémech, které budeme chtít řešit evolučními algoritmy, se funkci $f$ obvykle snažíme maximalizovat. Jinými slovy, hledáme takový gen $g^* \in G$, že 
+\emph{Fitness} funkci budeme značit písmenem $f: G \rightarrow \R$, kde $G$ je množina všech možných jedinců. Fitness nabízí měřitelnou kvalitu daného genomu a pomáhají algoritmu rozlišovat mezi více a méně vhodnými jedinci. Při návrhu fitness funkce je však nutné být opatrný, aby se předešlo běžným problémům, jako je předčasná konvergence nebo uváznutí v lokálních maximech. Není neobvyklé, že do fitness funkce je zahrnuto více různých komponent, které do výsledné hodnoty přispivají různými vahami. Tímto způsobem můžeme lépe rozlišit kvalitní řešení od těch nekvalitních a poskytnout algoritmu více informací pro efektivnější průzkum prostoru řešení. V praxi to může znamenat, že vedle hlavního kritéria, jako je například výkon nebo efektivita, mohou být do fitness funkce zahrnuty i sekundární kritéria, jako je cena, estetičnost nebo další meta-heuristiky, které mohou pomoci při hledání optimálního řešení.
+
+V problémech, které budeme chtít řešit evolučními algoritmy, se funkci $f$ obvykle snažíme maximalizovat. Jinými slovy, hledáme takového jedince $g^* \in G$, že 
 $$g^* = argmax_{g \in G} f(g)$$
 
-Fitness funkce nabízí měřitelnou kvalitu daného genu a pomáhají algoritmu rozlišovat mezi více a méně vhodnými jedinci. Při návrhu fitness funkce je však nutné být opatrný, aby se předešlo běžným problémům, jako je předčasná konvergence nebo uváznutí v lokálních maximech. Není neobvyklé, že do fitness funkce je zahrnuto více různých komponent, které do výsledné hodnoty přispivají různými vahami. Tímto způsobem můžeme lépe rozlišit kvalitní řešení od těch nekvalitních a poskytnout algoritmu více informací pro efektivní průzkum prostoru řešení. V praxi to může znamenat, že vedle hlavního kritéria, jako je například výkon nebo efektivita, mohou být do fitness funkce zahrnuty i sekundární kritéria, jako je cena, estetičnost nebo další meta-heuristiky, které mohou pomoci při hledání optimálního řešení.
-
 \subsection{Selekce}
-Selekce, nebo také environmentální selekce, je genetický operátor, který simuluje proces přírodního výběru. Tento operátor přiřazuje jednotlivým jedincům jejich schopnosti přežívat a reprodukovat se na základě jejich fitness. Ti nejúspěšnější jedinci jsou vybíráni pro reprodukci, zatímco ti méně úspěšní jsou buď eliminováni nebo mají menší šanci přispět svými geny do další generace. Díky selekci se algoritmus soustředí na oblasti vyhledávacího prostoru s vysokým potenciálem, což vede k rychlejší a konvergenci k optimálním řešením. 
+\emph{Selekce}, nebo také environmentální selekce, je genetický operátor, který simuluje proces přírodního výběru. Tento operátor přiřazuje jednotlivým jedincům jejich schopnosti přežívat a reprodukovat se na základě jejich fitness. Ti nejúspěšnější jedinci jsou vybíráni pro reprodukci, zatímco ti méně úspěšní jsou buď eliminováni nebo mají menší šanci přispět svými geny do další generace. Díky selekci se algoritmus soustředí na oblasti vyhledávacího prostoru s vysokým potenciálem, což vede k rychlejší a konvergenci k optimálním řešením. 
 
-V kontextu selekce se často mluví o $(\mu + \lambda)$ a $(\mu, \lambda)$ selekci. 
+V kontextu selekce se často mluví o $(\mu + \lambda)$ a $(\mu, \lambda)$ strategiích pro selekci. 
 
-$(\mu + \lambda)$ selekce spočívá v tom, že z $\mu$ rodičů generujeme $\lambda$ potomků. Tyto potomky následně spojíme s původními rodiči a z této kombinované skupiny vybereme nejlepších $\mu$ jedinců pro další generaci. Tento přístup zajišťuje zachování nejlepších genetických vlastností z předešlých generací a poskytuje pojistku proti ztrátě kvalitních genů v případě, že nová generace by byla průměrně horší než její předchůdce. (citace kniha)
+\emph{$(\mu + \lambda)$ selekce} spočívá v tom, že z $\mu$ rodičů generujeme $\lambda$ potomků. Tyto potomky následně spojíme s původními rodiči a z této kombinované skupiny vybereme nejlepších $\mu$ jedinců pro další generaci. Tento přístup zajišťuje zachování nejlepších genetických vlastností z předešlých generací a poskytuje pojistku proti ztrátě kvalitních genů v případě, že nová generace by byla průměrně horší než její předchůdce \cite{EibenSmith2015}.
 
-Na druhou stranu, $(\mu, \lambda)$ selekce vychází z principu, kde $\mu$ rodičů generuje $\lambda$ potomků, ale pouze tito potomci postupují do další generace, což znamená úplné nahrazení původní populace. Tento proces, při němž jsou všichni rodiče nahrazení, pomáhá efektivněji překonávat lokální minima prostoru řešení, což je obzvláště cenné v situacích, kde prostor řešení obsahuje mnoho lokálních minim. (citace kniha)
+Na druhou stranu, \emph{$(\mu, \lambda)$ selekce} vychází z principu, kde $\mu$ rodičů generuje $\lambda$ potomků, ale pouze tito potomci postupují do další generace, což znamená úplné nahrazení původní populace. Tento proces, při němž jsou všichni rodiče nahrazení, pomáhá efektivněji překonávat lokální minima prostoru řešení, což je obzvláště cenné v situacích, kde prostor řešení obsahuje mnoho lokálních minim \cite{EibenSmith2015}.
+
+Jako selekci nejčastěji používáme ruletovou selekci, nebo turnajovou selekci.
+
+Při ruletové selekci jedince $g_a$ vybere další generace s pravděpodobností
+$$\frac{f(g_a)}{\sum_g f(g)}$$
+
+Při turnajové selekci vybereme náhodně $k$ jedinců z popupulace (většinou $k = 3,5,10$). Z těchto $k$ jedinců postupuje do další populace pouze ten nejlepší.
 
 \section{Evoluční algoritmus}
 
-Příklad návrhu jednoduchého evolučního algoritmu může můžeme vidět v algoritmu 1.
+Příklad návrhu jednoduchého evolučního algoritmu může můžeme vidět v algoritmu 1 \ref{alg:1}.
 
 \begin{algorithm}
 \caption{Jednoduchý evoluční algoritmus}
@@ -57,17 +66,18 @@ Příklad návrhu jednoduchého evolučního algoritmu může můžeme vidět v 
     \EndWhile
     \State Vrátíme nejlepšího jedince z $p$
 \EndFunction
+\label{alg:1}
 \end{algorithmic}
 \end{algorithm}
 
 
-\section{Přiklady}
+\section{Přiklad}
 
 V této části bychom chtěli ukázat, jak lze navrhnout evoluční algoritmus pro řešení některých vybraných netriviálních problémů.
 
 \subsection{Problém Batohu}
 
-Problém batohu je generalizace mnoha industriálních problémů (citace knížka). Představme si, že se balíme třeba na několikadenní túru do hor a s sebou bychom si chtěli zabalit batůžek. Chtěli bychom s sebou mít co nejužitečnější věci, ale zároveň si nemůžeme vzít všechno, protože bychom to neunesli. Problém batohu spočívá v tom, jak si vybrat věci, které si s sebou zabalíme, tak abychom maximalizovali užitek a zároveň se vešli do našeho stanoveného limitu.
+Problém batohu je generalizace mnoha industriálních problémů \cite{EibenSmith2015}. Představme si, že se balíme třeba na několikadenní túru do hor a s sebou bychom si chtěli zabalit batůžek. Chtěli bychom s sebou mít co nejužitečnější věci, ale zároveň si nemůžeme vzít všechno, protože bychom to neunesli. Problém batohu spočívá v tom, jak si vybrat věci, které si s sebou zabalíme, tak abychom maximalizovali užitek a zároveň se vešli do našeho stanoveného limitu.
 
 Formálněji se tento problém definuje následovně. Je dána množina $n$ předmětů s hmotnostmi $h_1, \dots, h_n \in \N$, cenami $c_1, \dots, c_n \in \N$ a maximální hmotnost $H \in \N$. Hledáme takovou podmnožinu $p \subseteq \{1, \dots n\}$, pro kterou platí, že $\sum_{i \in P} h_i \leq H$ a zároveň $\sum_{i \in P} c_i$ je co největší.
 
@@ -79,6 +89,5 @@ Jako ilustrační řešení tomuto problému jsme navrhli tyto evoluční operá
     \item Fitness funkce $f$ v tomto případě bude $f(\alpha) = \sum_{i=1}^n \alpha_i \cdot \c_i$ pokud $\sum_{i=1}^n \alpha_i \cdot h_i < W$ jinak $0$
 \end{itemize}
 
-Výsledky běhu takového algoritmu můžeme vidět ve obrázku 1.1
+Výsledky běhu takového algoritmu můžeme vidět na~obrázku \ref{exp:1}
 
-\xxx{Měli bych uvéšt více příkladů?}
