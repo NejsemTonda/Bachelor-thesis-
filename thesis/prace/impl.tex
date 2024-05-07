@@ -1,34 +1,37 @@
 \chapter{Implementace}
 
-V této části bakalářské práce se zaměříme na praktickou implementaci evolučních algoritmů. Kromě toho je nutné ale i implementovat fyzikální prostředí, podobné tomu jako je ve hře polybridge. V první řadě se zaměříme aby se naše simulace co nejvěrněji podobala hře, což umožní použít řešení navrhnuté evolučními algoritmy i ve hře. Následně navrhneme několik různých podob evolučního algoritmu pro stavbu mostu a ty mezi sebou porovnáme. Jako programovací jazyk jsme zvolili Python.
+V této části bakalářské práce se zaměříme na praktickou implementaci evolučních algoritmů. Kromě toho je nutné ale i implementovat fyzikální prostředí, podobné tomu jako je ve hře polybridge. V první řadě se zaměříme aby se naše simulace co nejvěrněji podobala hře, což umožní použít řešení navrhnuté evolučními algoritmy i ve hře. Následně navrhneme několik různých podob evolučního algoritmu pro stavbu mostu a ty mezi sebou porovnáme. Jako programovací jazyk jsme zvolili Python. Kompletní implementaci i se stručnou dokumentací můžeme nalézt na githubu \cite{git}.
 
+\section{Související literatura}
+
+Pro návrh evolučních operátorů využijeme inspiraci z existujících studií, které se zaměřili na podobný problém. Konkrétně z diplomové práce Huga Lispectora \cite{Lispector2022} adoptujeme metodu chytré inicializace mostů. Dále použijeme některé evoluční operátory z programovacího projektu autora AstroSam \cite{AstroSam2023}. Je třeba poznamenat, že obě zmíněné práce se nevěnují přesně stejnému problému, což nám znemožňuje přímé porovnání našich výsledků s těmito studiemi.
 
 \section{Fyzikální engine}
 
-Jako fyzikální engine pro simulaci jsme zvolili Box2D \citet{box2d}. Box2D je open-source fyzikální engine, který poskytuje simulaci pohybu objektů ve 2D prostoru. Je často využíván ve vývoji počítačových her ale také simulací a umožňuje snadné zpracování kolizí, gravitace, tuhosti objektů a dalších fyzikálních jevů. Tento engine používáme dostopnými knihnovami v Pythonu, ale původně byl implementován v jazyce C++, což snižuje výpočtení náročnost simulace umožňuje nám iterovat přes rozsáhlé množství simulací.
+Jako fyzikální engine pro simulaci jsme zvolili Box2D \cite{box2d}. Box2D je open-source fyzikální engine, který poskytuje simulaci pohybu objektů ve 2D prostoru. Je často využíván ve vývoji počítačových her ale také simulací a umožňuje snadné zpracování kolizí, gravitace, tuhosti objektů a dalších fyzikálních jevů. Tento engine používáme dostupnými knihovnami v Pythonu, ale původně byl implementován v~jazyce C++, což snižuje výpočetní náročnost simulace umožňuje nám iterovat přes rozsáhlé množství simulací. Pro tento engine jsme se rozhodli, jelikož z dostupných zdrojů víme, že stejný engine použili i vývojáři hry Poly Bridge \cite{Reddit}. 
 
 \section{Aproximace hře Poly Bridge}
 
-V naší simulaci jsme implementovali různé aspekty hry pomocí následujících komponent knihovny Box2D \citet{b2docs}:
+V naší simulaci jsme implementovali různé aspekty hry pomocí následujících komponent knihovny Box2D \cite{b2docs}:
 
 \begin{itemize}
     \item \emph{Materiály}: Ty jsou modelovány jako dynamické objekty, pro které používáme \texttt{Box2D.b2DynamicBody}.
-    \item \emph{Klouby}: Pro spojení různých materiálů jsme využili \texttt{Box2D.b2RevoluteJoint}.
-    \item \emph{Zátež na prvky}: Abychom zjistili síly působící na jednotlivé elementy v simulaci, používáme metodu \texttt{b2body.GetReactionForce()}, která vrací reakční sílu vzniklou v důsledku interakcí těles.
+    \item \emph{Klouby}: Pro spoje různých materiálů jsme využili \texttt{Box2D.b2RevoluteJoint}.
+    \item \emph{Zátež na prvky}: Abychom zjistili síly působící na jednotlivé elementy v simulaci, používáme metodu \texttt{b2body.GetReactionForce()}, která vrací reakční sílu vzniklou v důsledku interakce těles.
 \end{itemize}
 
 \subsection{Testy}
 
-Abychom v naší simulaci co nejvěrněji napodobili chování fyzikálních prvků jako ve hře polybridge, zavedli jsme šest různých testů. Tyto testy zkoumají aspekty fyzikální simulace, jako jsou odolnost materiálů v proměnlivých podmínkách, hmotnost materiálů a interakci sil mezi objekty.
+Abychom v naší simulaci co nejvěrněji napodobili chování fyzikálních prvků jako ve hře, zavedli jsme šest různých testů. Tyto testy zkoumají aspekty fyzikální simulace, jako jsou odolnost materiálů v proměnlivých podmínkách, hmotnost materiálů a interakci sil mezi objekty.
 
 Zvolené testy jsou následující:
 
 \begin{enumerate}
-    \item \textbf{$2$ vozovky mezi dvěma pevnými body} Očekávaným výsledkem je, že konstrukce praskne pod zatížením samotných vozovek.
-    \item \textbf{$6$ dřevěných dílů mezi dvěma pevnými body} Očekáváme, že konstrukce vydrží bez prasknutí.
-    \item \textbf{$7$ dřevěných dílů mezi dvěma pevnými body} V tomto testu očekáváme, že konstrukce pod tíhou praskne.
-    \item \textbf{Symetrický obrazec z $13.66$ metrů vozovky, zavěšený na jednom kusu vozovky} Testujeme, zda vozovka unese zatížení bez prasknutí.
-    \item \textbf{Symetrický obrazec z $14.66$ metrů vozovky, zavěšený na jednom kusu vozovky} V tomto případě testujeme, zda konstrukce nevydrží zatížení a praskne.
+    \item \textbf{2 vozovky mezi dvěma pevnými body} Očekávaným výsledkem je, že konstrukce praskne pod zatížením samotných vozovek.
+    \item \textbf{6 dřevěných dílů mezi dvěma pevnými body} Očekáváme, že konstrukce vydrží bez prasknutí.
+    \item \textbf{7 dřevěných dílů mezi dvěma pevnými body} V tomto testu očekáváme, že konstrukce pod tíhou praskne.
+    \item \textbf{Symetrický obrazec z 13.66 metrů vozovky, zavěšený na jednom kusu vozovky} Testujeme, zda vozovka unese zatížení bez prasknutí.
+    \item \textbf{Symetrický obrazec z 14.66 metrů vozovky, zavěšený na jednom kusu vozovky} V tomto případě testujeme, zda konstrukce nevydrží zatížení a praskne.
     \item \textbf{Komplexní most z vozovek a dřeva, po kterém přejede auto} Cílem tohoto testu je prozkoumat interakci sil mezi různými materiály, kdy očekáváme, že most vydrží přejetí auta.
 \end{enumerate}
 
@@ -53,33 +56,32 @@ Naše implementace simulace ma $4$ různé parametry.
     \item \emph{Hustota dřeva}: Hustota materiálů pro dřevo (\texttt{Box2D.b2Density}).
     \item \emph{Koeficient hustoty}: Násobek hustoty dřeva, který bude použit pro hustotu vozovky.
     \item \emph{Max. zatížení dřeva}: Maximální zatížení dřeva.
-    \item \emph{Keoficient zatížení}: Násobek maximálního zatížení dřeva, který bude použit pro maximální zátížení vozovky.
+    \item \emph{Keoficient zatížení}: Násobek maximálního zatížení dřeva, který bude použit pro maximální zatížení vozovky.
 \end{itemize}
 
-Pro nalezení takových parametrů, které splní nejvíce testů jsem zvolili \textit{Random search} \cite{Random}. Prohledaná rozmezí těchto parametrů a jejich nejlepší nalezené hodnoty můžeme vidět v tabulce \ref{tab:1}. Bohužel se nám nepodařilo najít takové parametry, abychom splnili všechny. Rozhodli jsme se že $5.$ test vyřadíme.
+Pro nalezení takových parametrů, které splní nejvíce testů jsme zvolili \textit{Random search} \cite{Random}. Prohledaná rozmezí těchto parametrů a jejich nejlepší nalezené hodnoty můžeme vidět v tabulce \ref{tab:1}. Bohužel se nám nepodařilo najít takové parametry, abychom splnili všechny. Rozhodli jsme se že $5.$ test vyřadíme.
+
 
 \begin{table}[b!]
-
 \centering
-\begin{tabular}{l@{\hspace{1.5cm}}D{.}{,}{3.2}D{.}{,}{1.2}D{.}{,}{2.3}}
+\begin{tabular}{l@{\hspace{1.5cm}}D{.}{,}{3}D{.}{,}{3}}
 \toprule
-\pulrad{\textbf{Prametr}} & \mc{\pulrad{\textbf{rozmezí}}} & \mc{\textbf{nalezená hodnota}$^a$} \\
+\textbf{Parametr} & \multicolumn{1}{c}{\textbf{Rozmezí}} & \multicolumn{1}{c}{\textbf{Nalezená hodnota}$^a$} \\
 \midrule
-\emph{Hustota dřeva} & [0.01-3] & 1.348 \\
-\emph{Max. zatížení dřeva} & [50.0-2050.0] & 765.0 \\
-\emph{Koeficient hustoty} & [0.3 - 9.3] & 3.992 \\
-\emph{Keoficient zatížení} & [0.1-5.1] & 0.821 \\
+\emph{Hustota dřeva} & [0,01-3,01] & 1,348 \\
+\emph{Max. zatížení dřeva} & [50,0-2050,0] & 765,0 \\
+\emph{Koeficient hustoty} & [0,3-9,3] & 3,992 \\
+\emph{Koeficient zatížení} & [0,1-5,1] & 0,821 \\
 \bottomrule
-\multicolumn{4}{l}{\footnotesize \textit{Pozn:}
-$^a$ Zaokrouhleno na 3 desitinná místa}
 \end{tabular}
 \caption{Parametry pro simulaci, prohledávaná rozmezí a jejich nejlepší nalezená hodnoty.}\label{tab:1}
+\footnotesize \textit{Pozn: $^a$Zaokrouhleno na 3 desetinná místa}
 \end{table}
 
 
 \subsection{Úrovně}
 
-Jako testovací prostředí pro evoluční algoritmus jsme zvolili první $4$ úrovně z původní hry. Více úrovní jsem kvůli jejich komplexitě nezahrnuli.
+Jako testovací prostředí pro evoluční algoritmus jsme zvolili první $4$ úrovně z původní hry (viz obrázky \ref{impl-fig:2}, \ref{impl-fig:3}, \ref{impl-fig:4} a \ref{impl-fig:5}). Více úrovní jsme kvůli jejich komplexitě nezahrnuli.
 
 \begin{figure}[ht]
     \centering
@@ -140,29 +142,28 @@ Jako testovací prostředí pro evoluční algoritmus jsme zvolili první $4$ ú
 
 \section{Aplikace evolučních algoritmů}
 
-V následující sekci ukážem, jak jsem navrhli různé typy genetický operátorů. Budeme používa následující značeni.
-
+V následující sekci ukážeme, jak jsme navrhli různé typy genetický operátorů. Budeme používat následující značení.
 \begin{itemize}
     \item $l_{max}$ je maximální délka materiálu
     \item $T$ je množina všech materiálů, které můžeme použít (vozovka, dřevo, nic)
-    \item $g$ je gen jedince, nebo také jeden konkrétní most
+    \item $g$ je genom jedince, nebo také jeden konkrétní most
     \item $d_{min}(g)$ minimální vzdálenost vozidla od úrovní definovaného bodu na druhé straně řeky, které se podařilo dosáhnout v simulaci
     \item $cost(g)$ cena mostu $g$
 \end{itemize}
 
 Ve všech případech se snažíme optimalizovat dvě hodnoty a to jak daleko naše vozidlo dojelo a cenu mostu. V rámci algoritmu se tedy primárně snažíme maximalozovat $-d_{max}(g)$ a sekundárně $-cost(g)$.
 
-Naše fitness funkce $f$ bude tedy udávaná dvojicí čísel $f(g) = (-d_{min}(g), -cost(g))$
+Naše fitness funkce $f$ bude tedy udávaná dvojicí čísel. $$f(g) = (-d_{min}(g), -cost(g))$$
 
 \subsection{Jednoduchý návrh}
 
-Nejjednušší návrh danému problému by mohl vypadat následovně. Reprezentace genu je vektor dvojic čísel $c \in \{([0, \dots, x_{max}] \times [0, \dots, y_{max}])\}^n$ kde $x_{max} \in \N$ a $y_{max} \in \N$ je šířka a výška úrovně a vektor $t \in T^n$. Vektor $c$ představuje serii kliknutí myši na obrazovku a $t$ jaký typ materiálu přidáme.
+Nejjednodušší návrh danému problému by mohl vypadat následovně. Reprezentace genu je vektor dvojic čísel $c \in \{([0, \dots, x_{max}] \times [0, \dots, y_{max}])\}^n$ kde $x_{max} \in \N$ a $y_{max} \in \N$ je šířka a výška úrovně a vektor $t \in T^n$. Most se pak z genomu postavíme následovně. Iterujeme přes všechny dvojice z $c$ a zároveň i přes materiály z $t$. Mezi bod tvořený současnou dvojicí a posledním bodem, na který jsme materiál přidali, se snažíme položit současný materiál. Pokud je současný bod od toho minulého příliš daleko tak jej přiblížíme aby jeho vzdálenost byla $l_{max}$. Na začátku jako poslední bod vybereme nejvyšší kotvu na levém břehu. Tímto způsobem se snažíme napodobit posloupnost kliknutí, které by hráč normálně provedl.
 
-Jake mutaci jsme zvolili náhodné posunutí pozice kliknutí od $\pm 1$ s pravděpodobností $\frac{1}{n}$ a náhodnou změnu meteriálu s pravděpodobností $\frac{1}{n}$.
+Jake mutaci jsme zvolili náhodné posunutí pozice kliknutí (bodu) o $\pm 1$ s pravděpodobností $\frac{1}{n}$ a náhodnou změnu materiálu s pravděpodobností $\frac{1}{n}$.
 
-Jako křížení jsme použili jednobodové křížení vektoru $c$  a $t$ podle stejně zvoleného náhodného bodu. Jako selekci jsme zvolili turnajovou selekci.
+Jako křížení jsme použili jednobodové křížení vektoru $c$ a $t$ podle stejně zvoleného náhodného bodu. Jako selekci jsme zvolili turnajovou selekci.
 
-Jak můžeme vidět v experimentu (odkaz experiment), algoritmu se nedaří stavět příliš kvalitní mosty. Domníváme se, že by tomu tak je z následujících důvodů.
+Jak můžeme vidět v experimentu \ref{exp:2}, algoritmu se nedaří stavět příliš kvalitní mosty. Domníváme se, že by tomu tak je z následujících důvodů.
 
 \begin{itemize}
     \item Z principu reprezentace jedince je nepravděpodobné, aby vznikaly krátké hrany, které mohou být klíčové pro kvalitní řešení.
@@ -175,7 +176,9 @@ Jak můžeme vidět v experimentu (odkaz experiment), algoritmu se nedaří stav
 
 Kvůli tomu, jak jsme reprezentovali jedince v předchozím návrhu, je nepravděpodobné, že budou vznikat krátké hrany, které mohou být zásadní pro dobré řešení. To, že náhodně zvolíme blízko od od posledního kliknutí je méně pravděpodobné, než že zvolíme bod daleko. Proto jsme navrhli kódování genu, kde dvojce z vektoru $c$ představují délku a úhel přidaného materiálu $c \in \{([0, l_{max}] \times [0, 2 \pi])\}^n$. Vektor $t$ zůstává stejný jako v předchozím případě.
 
-Výsledek běhu takto navrženého evolučního algoritmu můžeme vidět v experimentu (odkaz exepriment)
+Jake mutaci jsme zvolili přepsání hodnoty z $c$ na novou náhodně zvolenou s pravděpodobností $\frac{1}{n}$ a náhodnou změnu materiálu s pravděpodobností $\frac{1}{n}$.
+
+Křížení a selekci použijeme stejnou jako v předchozím případě.
 
 \subsection{Vylepšená fitness funkce}
 
@@ -196,21 +199,20 @@ Jedním z problémů, se kterým se náš současný návrh potýká je ten, že
     \label{impl-fig:6}
 \end{figure}
 
-Navrhli jsem proto několik různých penalizací, které můžeme do fitness zapojit.
+Navrhli jsme proto dvě různé penalizace, které můžeme do fitness zapojit.
 
 \begin{itemize}
-    \item Penalizace za umisťování materiálů, který se nespojí s další materíálem. Lépe propojený most by měl mít lepší stabilitu
-    \item Penalizace za všechny kotvy, které jedinec nepoužil. V praxi vzdálenosti každého kliknutí ke všem nepoužitým kotvám. Most který používá více kotev by měl být stabilnější
-    \item Penalizace za předčasně ukončenou simulaci. Simulace se předčasně ukončí pokud vozidlo spadne, nebo pokud se dlouho nepohybuje.
+    \item Penalizace za umisťování materiálů, který se nespojí s další materiálem. Lépe propojený most by měl mít lepší stabilitu.
+    \item Penalizace za všechny kotvy, které jedinec nepoužil. V praxi použijem vzdálenost každého kliknutí ke všem nepoužitým kotvám. Most který používá více kotev by měl být stabilnější.
 \end{itemize}
 
-Fitness pak bude odpovídat $f(g) = (-d_{min}(g) + \alpha \cdot mat + \beta \cdot anch + \gamma \cdot term, -cost(g))$, kde $\alpha, \beta, \gamma \in \R$ a $mat, anch, term$ jsou penalizace za nespojený materiál, nevyužité kontvy a předčasné ukončení.
+Nová fitness funkce pak vypadá následovně. $$f(g) = (-d_{min}(g) + \alpha \cdot mat + \beta \cdot anch, -cost(g))$$ Koeficinety $\alpha, \beta \in \R$ značí váhu penalizace a $mat, anch$ jsou hodnoty penalizace za nespojený materiál a nevyužité kotvy.
 
-Použijeme stejnou selekci a mutaci a reprezentaci jedince jako v předchozím návrhu.
+Použijeme stejnou selekci, mutaci a reprezentaci jedince jako v předchozím návrhu.
 
 \subsection{Měnící se fitness}
 
-V rámci našeho přístupu jsme narazili na specifický problém spojený se stabilitou mostu. Spočívá v tom, že dokud není most zcela dokončen, nedosahuje potřebné stability, které je potřeba pro přejetí vozidlem. Abychom se s tímto omezením vypořádali, rozhodli jsme se pro zjednodušení problému a využití techniky incrementálního evolučního alogritmu navrhnuté ve článku Mansouryho Nashaata et al. \cite{IGA}. Na začátku experimentu proto začínáme s břehy blíže umístěnými k sobě a jakmile dosáhneme dostatečně nízké průměrné fitness v celé populaci, vzdálenost postupně zvětšujeme, dokud nedosáhneme vzdálenosti definové úrovní. 
+V rámci našeho přístupu jsme narazili na specifický problém spojený se stabilitou mostu. Spočívá v tom, že dokud není most zcela dokončen, nedosahuje potřebné stability, které je potřeba pro přejetí vozidlem. Abychom se s tímto omezením vypořádali, rozhodli jsme se pro zjednodušení problému a využití techniky zvané \emph{inkrementální evoluční alogritmus} navrhnuté ve článku Mansouryho Nashaata et al. \cite{IGA}. Na začátku experimentu proto začínáme s břehy blíže umístěnými k sobě a jakmile dosáhneme dostatečně nízké průměrné fitness v celé populaci, vzdálenost postupně zvětšujeme, dokud nedosáhneme vzdálenosti definové úrovní. 
 
 Použijeme stejnou selekci, mutaci a reprezentaci jedince jako v předchozím návrhu.
 
@@ -221,7 +223,7 @@ V této části bychom chtěli představit odlišný způsob, jak kódovat jedno
 \begin{itemize}
     \item \textbf{inicializace}: Do $V$ přidáme všechny kotvy z úrovně. Náhodně vybereme materiál $t \in T$, vrchol $v_1 \in V$, úhel $\varphi$ a délku $0 < l < l_{max}$. Vytvoříme nový vrchol $v_2$ a vložíme jej do $V$. Upravíme $\sigma_v$ tak, že $v_2$ se promítne na bod ve vzdálenosti $l$ a pod úhlem $\varphi$ od $\sigma_v(v_1)$. Vytvoříme novou hranu $(v_1, v_2)$ a přidáme jí do $E$ a zároveň upravíme $\sigma_e$ tak, že $\sigma_e((v_1, v_2)) = t$. Opakujeme dokud nevytvoříme $n$ nových vrcholů. Následně náhodně volíme dva vrcholy $v_1, v_2 \in V$. Pokud $||\sigma_v(v_1) - \sigma_v(v_2)|| < l_{max}$ vytvoříme novou hranu $(v_1, v_2)$ a přidáme do $E$. Upravíme $\sigma_e((v_1, v_2)) = t$ pro náhodně zvolené $t \in T$. Opakujeme $2n$-krát.
     \item \textbf{mutace}: Budeme rozlišovat mutaci pro vrcholy a mutaci pro hrany. Mutace pro vrcholy upraví $\sigma_v$ tak, že projekci vrcholu $v \in V$ přemístí na náhodně zvolený bod z $\{ x \in \R^2 | \forall v_2 \in Adj(v_1), ||x - \sigma_v(v_2)|| < l_{max}\}$ kde $Adj(v_1) = \{v \in V | (v_1, v) \in E\}$. Jinými slovy náhodně posumeme vrchol $v$ tak, aby nebyl příliš daleko od žádného vrcholu s nímž byl $v$ spojen hranou. Mutace pro hrany může hranu přidat, odebrat jí nebo změnit $\sigma_e$ náhodné hrany na jiný typ materiálu.
-    \item \textbf{křížení}: Dva jedince můžeme skřížit následovně. Nechť $V_1, E_1$ je množina všech vrcholů a hran prvního z rodičů a $V_2, E_2$ druhého. Nechť $\sigma_{v_p}$ je spojení $\sigma_v$ funkcí obou rodičů a $\sigma_{e_p}$ spojení $\sigma_e$ funkcí obou rodičů. Zvolíme náhodně hranici $min\{\sigma_{v_p}(v)_x | v \in V_1 \cup V_2\} < p_x < max\{\sigma_{v_p}(v)_x | v \in V_1 \cup V_2\}$. Nechť $L = \{ v | v \in V_1, \sigma_{v_p}(v)_1 < p_x\}$ a $R = \{ v | v \in V_2, \sigma_{v_p}(v)_1 > p_x\}$. Vrcholy genu potomka pak budou z $V_p = R + L$ a hrany $E_p = (E_1 + E_2) \cap V_p \times V_p$, kterým navíc přidáme všechny $(v_1, v_2), v_1 \in R, v_2 \in L, ||\sigma_{v_p}(v_1) - \sigma_{v_p}(v_2)|| < l_{max}$ s pravděpodobností $\alpha$. $\sigma_v$ potomka bude $sigma_{v_p}$ a stejně tak pro $\sigma_e$. Příklad takové mutace můžeme vidět na obrázku \ref{impl-fig:8}
+    \item \textbf{křížení}: Dva jedince můžeme skřížit následovně. Nechť $V_1, E_1$ je množina všech vrcholů a hran prvního z rodičů a $V_2, E_2$ druhého. Nechť $\sigma_{v_p}$ je spojení $\sigma_v$ funkcí obou rodičů a $\sigma_{e_p}$ spojení $\sigma_e$ funkcí obou rodičů. Zvolíme náhodně hranici $min\{\sigma_{v_p}(v)_x | v \in V_1 \cup V_2\} < p_x < max\{\sigma_{v_p}(v)_x | v \in V_1 \cup V_2\}$. Nechť $L = \{ v | v \in V_1, \sigma_{v_p}(v)_1 < p_x\}$ a $R = \{ v | v \in V_2, \sigma_{v_p}(v)_1 > p_x\}$. Vrcholy genu potomka pak budou z $V_p = R + L$ a hrany $E_p = (E_1 + E_2) \cap V_p \times V_p$, kterým navíc přidáme všechny $(v_1, v_2), v_1 \in R, v_2 \in L, ||\sigma_{v_p}(v_1) - \sigma_{v_p}(v_2)|| < l_{max}$ s pravděpodobností $\alpha$. $\sigma_v$ potomka bude $\sigma_{v_p}$ a stejně tak pro $\sigma_e$. Příklad takové mutace můžeme vidět na obrázku \ref{impl-fig:8}
 \end{itemize}
 
 \begin{figure}[ht]
@@ -245,8 +247,6 @@ V této části bychom chtěli představit odlišný způsob, jak kódovat jedno
     \caption{Příklad křížení dvou rodičů. Na 1. a 2. obrázku zleva jsou rodiče. Hranice pro náhodné křížení je vyznačena červenou čárou. Na 2. obrázku zprava křížení částí mosty. Na nejpravějším obrazku překžížení s vystužením}
     \label{impl-fig:8}
 \end{figure}
-
-
 
 Jako selekci použijeme turnajovou selekci.
 
