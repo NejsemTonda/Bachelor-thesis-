@@ -9,7 +9,7 @@ import random
 import numpy as np
 
 
-level = LevelFactory.level1()
+level = LevelFactory.level4()
 env = level.env
    
 env.init_graphics()

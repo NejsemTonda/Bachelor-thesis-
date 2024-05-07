@@ -114,7 +114,8 @@ class GraphGenome:
             last = start_n
             direction = vec2(end_n.pos)-vec2(start_n.pos)
             direction = direction / direction.length
-            while True:
+            max_tries = 10000
+            for _ in range(max_tries):
                 if (vec2(last.pos)-vec2(end_n.pos)).length < 1.5:
                     break
                 l = random.randint(4, 8)/4
@@ -149,6 +150,8 @@ class GraphGenome:
             target = random.choice(nodes[level_anchors:])
             make_line(nodes, edges, node, target, Type.plank)
         
+        if len(nodes) > 1000:
+            return GraphGenome([], [])
         ## reinforce
         for n1, n2 in zip(nodes, nodes[1:]):
             possible = get_possible_points([n1.pos, n2.pos]) 

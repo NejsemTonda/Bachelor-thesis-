@@ -3,6 +3,10 @@ from sim.components import Car
 from Box2D.b2 import vec2
 from dataclasses import dataclass
 
+citi_car = 6 #3 in Poly Bridge
+station_vagon = 5 * citi_car/3 # 5 in Poly Bridge
+surfer_van = 6.5 * citi_car/3# 6.5 in Poly Bridge
+
 e = 0.05
 @dataclass
 class Level:
@@ -28,7 +32,7 @@ class LevelFactory:
             anchors=[vec2(14,5), vec2(14, 3)] 
         )
         
-        car = env.add_car(vec2(2.5,5.5+e), density=3)
+        car = env.add_car(vec2(2.5,5.5+e), density=station_vagon)
 
         goal = vec2(19,5.75577)
 
@@ -50,8 +54,8 @@ class LevelFactory:
             anchors=[vec2(15,5), vec2(10, 2)] 
         )
 
-        car = env.add_car(vec2(1,5.5+e), density=3)
-        env.add_car(vec2(3.5,5.5+e), density=3)
+        car = env.add_car(vec2(1,5.5+e), density=citi_car)
+        env.add_car(vec2(3.5,5.5+e), density=citi_car)
 
         goal = vec2(19,5.75577)
 
@@ -74,8 +78,8 @@ class LevelFactory:
             anchors=[vec2(16,5), vec2(12, 2.5)] 
         )
 
-        car = env.add_car(vec2(0,5.5+e), density=3)
-        env.add_car(vec2(2.5,5.5+e), density=3)
+        car = env.add_car(vec2(0,5.5+e), density=station_vagon)
+        env.add_car(vec2(2.5,5.5+e), density=citi_car)
 
         goal = vec2(19,5.75577)
 
@@ -99,7 +103,7 @@ class LevelFactory:
             [(20,5+e), (14,5+e), (14,0)],
             anchors=[vec2(14,5)] 
         )
-        car = env.add_car(vec2(3,3.5+e), density=3)
+        car = env.add_car(vec2(3,3.5+e), density=surfer_van)
 
         goal = vec2(19,5.75577)
 
