@@ -33,6 +33,9 @@ When `add-plank` or `add-road` mode:
 Anytime:
 * press `s` to start the simulation
 
+### Experiments
+
+If you wish to recreate all the experiemnts I've done, see and run `experiments.py` file.
 
 ### Using this code
 
@@ -108,7 +111,3 @@ for _ in range(200): # generations
     print(pop.best.fitness) # prints fitness of best ind. from population
     fitnesses = [a.fitness for a in pop.agents] # gets fitness of all agents in population 
 ```
-
-#### Inspiration
-
-Feel free to take inspiration from anything inside this repository. If  you wish to see how I have done my experiments look inside `experiments.py`

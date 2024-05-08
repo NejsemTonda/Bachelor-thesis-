@@ -18,7 +18,14 @@ from Box2D.b2 import vec2
 import pickle
 import re
 
-def run_experiemt(exp, name=None, title=None, save=False, compute=False, args_list=None):
+def run_experiemt(
+        exp, # function of the experiemnt
+        name=None, # name (for save file)
+        title=None, # Title for graph
+        save=False, # if this should be safe or only show
+        compute=False, # recompute all experitments? if set to false just load them and show them
+        args_list=None # list od **kwargs for experitments
+    ):
     def process_data(data_runs):
         data = {"Evaluation": [], "Fitness": [], "Run": []}
         for run_id, run in enumerate(data_runs):
